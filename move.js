@@ -81,14 +81,32 @@ const applyDragandTouchEvents = tiles => {
 
 
   tiles.forEach(tile => {
-    tile.setAttribute('draggable', 'true');
-    tile.addEventListener('dragstart', handleDragStart);
-    tile.addEventListener('dragover', handleDragOver);
-    tile.addEventListener('drop', handleDrop);
+      tile.setAttribute('draggable', 'true');
+      tile.addEventListener('dragstart', handleDragStart);
+      tile.addEventListener('dragover', handleDragOver);
+      tile.addEventListener('drop', handleDrop);
 
-    // Handle touch events
-    let touchSourceId = null;
-    let touchTimeout = null;
+      // Handle touch events
+      let touchSourceId = null;
+      let touchStartTime = null;
+      let touchTimeout = null;
+
+      tile.addEventListener('touchstart', event => {
+        // Check if the tile is not empty
+        if (event.target.textContent.trim() !== "") {
+          touchSourceId = event.target.id;
+          touchStartTime = Date.now();  // record the touch start time
+
+          // Set a timeout for 250ms before creating the shadow tile
+          touchTimeout = setTimeout(() => {
+            // Existing code to create and move shadow tile
+            // ...
+          }, 250);  // 250ms delay
+        } else {
+          // If the tile is empty, don't store the id
+          touchSourceId = null;
+        }
+      });
 
     tile.addEventListener('touchstart', event => {
       // Check if the tile is not empty
@@ -133,23 +151,16 @@ const applyDragandTouchEvents = tiles => {
       }
     });
 
+
     tile.addEventListener('touchend', event => {
       event.preventDefault();  // Call preventDefault here
 
-      // Clear the timeout if the touch event ends before half a second
+      // Clear the timeout if the touch event ends before 250ms
       clearTimeout(touchTimeout);
 
-      // Remove the shadow tile
-      if (shadowTile !== null) {
-        // Get the position of the shadow tile
-        let shadowTileRect = shadowTile.getBoundingClientRect();
+      const touchDuration = Date.now() - touchStartTime;
 
-        // Remove the shadow tile
-        shadowTile.remove();
-        shadowTile = null;
-
-        // Get the target tile based on the position of the shadow tile instead of the finger
-        const touchTarget = document.elementFromPoint(shadowTileRect.left + (shadowTileRect.width / 2), shadowTileRect.top + (shadowTileRect.height / 2));
+      const finalizeDrop = (touchSourceId,touchTarget)  => {
         if (touchSourceId && touchTarget && touchTarget.classList.contains('tile')) {
           handleDrop({
             target: touchTarget,
@@ -160,7 +171,28 @@ const applyDragandTouchEvents = tiles => {
           });
         }
         touchSourceId = null;
+
       }
+
+
+      if (shadowTile == null){
+        const touchTarget = document.elementFromPoint(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+        finalizeDrop(touchSourceId,touchTarget)
+      } else {
+        let shadowTileRect = shadowTile.getBoundingClientRect();
+        console.log(shadowTileRect)
+
+        // Remove the shadow tile
+        shadowTile.remove();
+        shadowTile = null;
+
+        // Get the target tile based on the position of the shadow tile instead of the finger
+        const touchTarget = document.elementFromPoint(shadowTileRect.left + (shadowTileRect.width / 2), shadowTileRect.top + (shadowTileRect.height / 2));
+        finalizeDrop(touchSourceId,touchTarget)
+      }
+
+
+
     });
   });
 }
