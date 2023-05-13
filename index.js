@@ -1,6 +1,7 @@
 import { applyDragandTouchEvents } from './move.js';
 
   let dictionary;
+  let puzzles;
   const loadDictionary = () => {
     return fetch('words.json') // Return the Promise from fetch
       .then(response => response.json())
@@ -9,6 +10,15 @@ import { applyDragandTouchEvents } from './move.js';
       })
       .catch(error => console.error(error));
   }
+  const loadPuzzles = () => {
+      return fetch('puzzles.json') // Return the Promise from fetch
+        .then(response => response.json())
+        .then(jsonData => {
+          puzzles = jsonData;
+        })
+        .catch(error => console.error(error));
+  }
+
 
   const generateTiles = () => {
     const gameBoard = document.getElementById('game-board');
@@ -21,9 +31,20 @@ import { applyDragandTouchEvents } from './move.js';
   };
 
   const buildBoard = tiles => {
-    // Using destructuring and spread syntax for shuffling letters
-    let letters = [..."SCENTCANOEARSONPOUSEFLEET"].sort(() => Math.random() - 0.5);
-    let filledIndices = [8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 36, 37, 38, 39, 40];
+    // Get all keys from the puzzles object
+    let keys = Object.keys(puzzles);
+
+    // Select a random key
+    let randomKey = keys[Math.floor(Math.random() * keys.length)];
+
+    // Get the puzzle corresponding to the random key
+    let puzzle = puzzles[randomKey];
+    document.getElementById('puzzle-id').textContent = 'Puzzle ID: ' +  randomKey;
+    let letters = [...puzzle].sort(() => Math.random() - 0.5);
+
+
+    // For example, let's assume that each puzzle is an object containing an array of letters and filled indices
+     let filledIndices = [8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 36, 37, 38, 39, 40];
 
     // Assign letters to tiles and color them grey
     filledIndices.forEach((index, i) => {
@@ -39,6 +60,7 @@ import { applyDragandTouchEvents } from './move.js';
       }
     });
   }
+
 
   const findWords = () => {
     const gridSize = 7;  // Grid is 7x7
@@ -220,18 +242,21 @@ import { applyDragandTouchEvents } from './move.js';
 
 
   document.addEventListener('DOMContentLoaded', async event => {
+    await loadPuzzles();
     resetBoard();
     await loadDictionary();
-    updateBoard()
+    updateBoard();
   });
+
 
   document.getElementById('reset-button').addEventListener('click', () => {
     resetBoard();
-    updateScoreDisplay();  // Update the score display after resetting the board
+    updateBoard();
+    updateScoreDisplay();
   });
 
   document.getElementById('scramble-button').addEventListener('click', scrambleTiles);
 
 
 
-  export { loadDictionary, resetBoard, updateBoard };
+  export { loadDictionary, loadPuzzles, resetBoard, updateBoard };
