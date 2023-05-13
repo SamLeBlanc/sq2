@@ -2,298 +2,320 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-      #game-board {
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          grid-template-rows: repeat(7, 1fr);
-          gap: 0px;
-          width: 90vw;
-          height: 90vw;
-          max-width: 700px;
-          max-height: 700px;
-      }
 
+  <style>
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  #container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #game-board {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 0px;
+    width: 95vw;
+    height: 95vw;
+    max-width: 1000px;
+    max-height: 1000px;
+    z-index:1;
+    border: 8px solid black;
+  }
+
+    .tile {
+        border: 1px solid #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 5vw;
+        font-weight:bold;
+        transition: transform 0s ease;
+        position: relative;
+        z-index: 1;
+
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    @media (min-width: 700px) {
       .tile {
-          border: 1px solid #000;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-size: 3vw;
-          font-weight:bold;
-          -webkit-touch-callout: none;
-          -webkit-user-select: none;
-          -khtml-user-select: none;
-          -moz-user-select: none;
-          -ms-user-select: none;
-          user-select: none;
+        font-size: 48px;
       }
+    }
 
-      @media (min-width: 700px) {
-        .tile {
-          font-size: 48px;
-        }
-      }
+    .empty {
+        background-color: white;
+    }
 
-      .empty {
-          background-color: white;
-      }
+    .filled {
+        background-color: lightgrey;
+    }
 
-      .filled {
-          background-color: lightgrey;
-      }
+    .valid {
+      background-color: green;
+    }
 
-      .valid {
-        background-color: green;
-      }
+  </style>
 
-    </style>
 </head>
+
 <body>
-  <div id="game-board">
-    <div class='tile' id='tile0'></div>
-    <div class='tile' id='tile1'></div>
-    <div class='tile' id='tile2'></div>
-    <div class='tile' id='tile3'></div>
-    <div class='tile' id='tile4'></div>
-    <div class='tile' id='tile5'></div>
-    <div class='tile' id='tile6'></div>
-    <div class='tile' id='tile7'></div>
-    <div class='tile' id='tile8'></div>
-    <div class='tile' id='tile9'></div>
-    <div class='tile' id='tile10'></div>
-    <div class='tile' id='tile11'></div>
-    <div class='tile' id='tile12'></div>
-    <div class='tile' id='tile13'></div>
-    <div class='tile' id='tile14'></div>
-    <div class='tile' id='tile15'></div>
-    <div class='tile' id='tile16'></div>
-    <div class='tile' id='tile17'></div>
-    <div class='tile' id='tile18'></div>
-    <div class='tile' id='tile19'></div>
-    <div class='tile' id='tile20'></div>
-    <div class='tile' id='tile21'></div>
-    <div class='tile' id='tile22'></div>
-    <div class='tile' id='tile23'></div>
-    <div class='tile' id='tile24'></div>
-    <div class='tile' id='tile25'></div>
-    <div class='tile' id='tile26'></div>
-    <div class='tile' id='tile27'></div>
-    <div class='tile' id='tile28'></div>
-    <div class='tile' id='tile29'></div>
-    <div class='tile' id='tile30'></div>
-    <div class='tile' id='tile31'></div>
-    <div class='tile' id='tile32'></div>
-    <div class='tile' id='tile33'></div>
-    <div class='tile' id='tile34'></div>
-    <div class='tile' id='tile35'></div>
-    <div class='tile' id='tile36'></div>
-    <div class='tile' id='tile37'></div>
-    <div class='tile' id='tile38'></div>
-    <div class='tile' id='tile39'></div>
-    <div class='tile' id='tile40'></div>
-    <div class='tile' id='tile41'></div>
-    <div class='tile' id='tile42'></div>
-    <div class='tile' id='tile43'></div>
-    <div class='tile' id='tile44'></div>
-    <div class='tile' id='tile45'></div>
-    <div class='tile' id='tile46'></div>
-    <div class='tile' id='tile47'></div>
-    <div class='tile' id='tile48'></div>
-
+  <div id="container">
+    <div id="game-board"></div>
+    <br>
+    <button id="reset-button">Reset</button>
   </div>
+  <script>
 
-<script>
+    let dictionary;
+    fetch('words.json')
+      .then(response => response.json())
+      .then(jsonData => {
+        dictionary = new Set(Object.keys(jsonData));
+      })
+      .catch(error => console.error(error));
 
-let dictionary;
-fetch('words.json')
-  .then(response => response.json())
-  .then(jsonData => {
-    dictionary = new Set(Object.keys(jsonData));
-  })
-  .catch(error => console.error(error));
+    const generateTiles = () => {
+      const gameBoard = document.getElementById('game-board');
+      for (let i = 0; i < 49; i++) {
+        const tile = document.createElement('div');
+        tile.classList.add('tile');
+        tile.id = 'tile' + i;
+        gameBoard.appendChild(tile);
+      }
+    };
 
-function getRandomLetter() {
-  const alphabet = "ORBITCHEMOCOLONUNIFYREEFS";
-  return alphabet[Math.floor(Math.random() * alphabet.length)];
-}
-
-function findWords() {
-    const gridSize = 7;  // Grid is 7x7
-    const tiles = Array.from(document.querySelectorAll('.tile'));
-
-    let words = [];  // List to hold the found words
-
-    // Function to add word to the list
-    function addWord(word, ids) {
-        if (word.length > 2) {  // We only care about words of length 2 or more
-            let valid = isDictionaryWord(word);
-            words.push({word, ids, valid});
-        }
+    const getRandomLetter = () => {
+      const alphabet = "ORBITCHEMOCOLONUNIFYREEFS";
+      return alphabet[Math.floor(Math.random() * alphabet.length)];
     }
 
-    // Find horizontal words
-    for (let row = 0; row < gridSize; row++) {
-        let word = '';
-        let ids = [];
-        for (let col = 0; col < gridSize; col++) {
-            let index = row * gridSize + col;
-            let tile = tiles[index];
-            if (tile.textContent !== '') {
-                word += tile.textContent;
-                ids.push(tile.id);
-            } else if (word !== '') {
-                addWord(word, ids);
-                word = '';
-                ids = [];
-            }
-        }
-        addWord(word, ids);  // Check for word at the end of the row
-    }
+    const buildBoard = tiles => {
+      // Using destructuring and spread syntax for shuffling letters
+      let letters = [..."ORBITCHEMOCOLONUNIFYREEFS"].sort(() => Math.random() - 0.5);
+      let filledIndices = [8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 36, 37, 38, 39, 40];
 
-    // Find vertical words
-    for (let col = 0; col < gridSize; col++) {
-        let word = '';
-        let ids = [];
-        for (let row = 0; row < gridSize; row++) {
-            let index = row * gridSize + col;
-            let tile = tiles[index];
-            if (tile.textContent !== '') {
-                word += tile.textContent;
-                ids.push(tile.id);
-            } else if (word !== '') {
-                addWord(word, ids);
-                word = '';
-                ids = [];
-            }
-        }
-        addWord(word, ids);  // Check for word at the end of the column
-    }
+      // Assign letters to tiles and color them grey
+      filledIndices.forEach((index, i) => {
+        tiles[index].textContent = letters[i];
+        tiles[index].classList.add('filled');
+      });
 
-    return words;
-}
-
-function isDictionaryWord(word) {
-    return dictionary.has(word.toLowerCase());
-}
-
-function highlightValidWords() {
-    const tiles = Array.from(document.querySelectorAll('.tile')); // Add this line
-    // Remove 'valid' class from all tiles and add 'filled' class
-    tiles.forEach(tile => {
-        tile.classList.remove('valid');
-        if (tile.textContent.trim() !== "") {
-            tile.classList.add('filled');
-        }
-    });
-
-    const words = findWords();
-    words.forEach(({ids, valid}) => {
-        if (valid) {
-            ids.forEach(id => {
-                let tile = document.getElementById(id);
-                // Add 'valid' class and remove 'filled' class if part of a valid word
-                tile.classList.add('valid');
-                tile.classList.remove('filled');
-            });
-        }
-    });
-}
-
-
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    const tiles = Array.from(document.querySelectorAll('.tile'));
-
-    let filledIndices = [8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 36, 37, 38, 39, 40];
-
-    // Shuffle the letters for the tiles
-    let letters = Array.from("ORBITCHEMOCOLONUNIFYREEFS");
-    for(let i = letters.length - 1; i > 0; i--){
-        const j = Math.floor(Math.random() * i);
-        const temp = letters[i];
-        letters[i] = letters[j];
-        letters[j] = temp;
-    }
-
-    // Assign letters to tiles and color them grey
-    for(let i = 0; i < 25; i++){
-        tiles[filledIndices[i]].textContent = letters[i];
-        tiles[filledIndices[i]].classList.add('filled');
-    }
-
-    // Assign empty strings to the rest of the tiles and color them white
-    for(let i = 0; i < tiles.length; i++){
+      // Assign empty strings to the rest of the tiles and color them white
+      tiles.forEach((tile, i) => {
         if (!filledIndices.includes(i)) {
-            tiles[i].textContent = '';
-            tiles[i].classList.add('empty');
+          tile.textContent = '';
+          tile.classList.add('empty');
         }
+      });
     }
 
-    tiles.forEach(tile => {
-        tile.setAttribute('draggable', 'true');
+    const findWords = () => {
+      const gridSize = 7;  // Grid is 7x7
+      const tiles = Array.from(document.querySelectorAll('.tile'));
 
-        const handleDragStart = (event) => {
-            draggedTileId = event.target.id;
-        };
+      let words = [];  // List to hold the found words
 
-        const handleDrop = (event) => {
-            const sourceId = draggedTileId;
-            const sourceElement = document.getElementById(sourceId);
-            const targetElement = event.target;
+      // Function to add word to the list
+      function addWord(word, ids) {
+          if (word.length > 2) {  // We only care about words of length 2 or more
+              let valid = isDictionaryWord(word);
+              words.push({word, ids, valid});
+          }
+      }
 
-            // Swap classes
-            let sourceClass = sourceElement.className;
-            let targetClass = targetElement.className;
-            sourceElement.className = targetClass;
-            targetElement.className = sourceClass;
+      // Find horizontal words
+      for (let row = 0; row < gridSize; row++) {
+          let word = '';
+          let ids = [];
+          for (let col = 0; col < gridSize; col++) {
+              let index = row * gridSize + col;
+              let tile = tiles[index];
+              if (tile.textContent !== '') {
+                  word += tile.textContent;
+                  ids.push(tile.id);
+              } else if (word !== '') {
+                  addWord(word, ids);
+                  word = '';
+                  ids = [];
+              }
+          }
+          addWord(word, ids);  // Check for word at the end of the row
+      }
 
-            // Swap text (letter)
-            const temp = sourceElement.textContent;
-            sourceElement.textContent = targetElement.textContent;
-            targetElement.textContent = temp;
+      // Find vertical words
+      for (let col = 0; col < gridSize; col++) {
+          let word = '';
+          let ids = [];
+          for (let row = 0; row < gridSize; row++) {
+              let index = row * gridSize + col;
+              let tile = tiles[index];
+              if (tile.textContent !== '') {
+                  word += tile.textContent;
+                  ids.push(tile.id);
+              } else if (word !== '') {
+                  addWord(word, ids);
+                  word = '';
+                  ids = [];
+              }
+          }
+          addWord(word, ids);  // Check for word at the end of the column
+      }
 
-            draggedTileId = null; // reset the activeTileId
+      return words;
+    }
 
-            highlightValidWords()
-        };
+    const isDictionaryWord = word => dictionary.has(word.toLowerCase());
 
-        const handleDragOver = (event) => {
-            event.preventDefault();
-        };
+    const highlightValidWords = () => {
+      const tiles = Array.from(document.querySelectorAll('.tile')); // Add this line
+      // Remove 'valid' class from all tiles and add 'filled' class
+      tiles.forEach(tile => {
+          tile.classList.remove('valid');
+          if (tile.textContent.trim() !== "") {
+              tile.classList.add('filled');
+          }
+      });
 
-        // Handle mouse events
-        tile.addEventListener('dragstart', (event) => {
-            event.dataTransfer.setData('text/plain', event.target.id);
-            draggedTileId = event.target.id;
+      const words = findWords();
+      words.forEach(({ids, valid}) => {
+          if (valid) {
+              ids.forEach(id => {
+                  let tile = document.getElementById(id);
+                  // Add 'valid' class and remove 'filled' class if part of a valid word
+                  tile.classList.add('valid');
+                  tile.classList.remove('filled');
+              });
+          }
+      });
+    }
+
+    const applyDragandTouchEvents = tiles => {
+
+      const handleDragStart = event => event.dataTransfer.setData('text/plain', event.target.id);
+
+      const handleDragOver = event => event.preventDefault();
+
+      const handleDrop = event => {
+        event.preventDefault();
+        const sourceElement = document.getElementById(event.dataTransfer.getData('text/plain'));
+        const targetElement = event.target;
+
+        // Animation
+        const sourceRect = sourceElement.getBoundingClientRect();
+        const targetRect = targetElement.getBoundingClientRect();
+
+        sourceElement.style.transform = `translate(${targetRect.left - sourceRect.left}px, ${targetRect.top - sourceRect.top}px)`;
+
+        targetElement.style.transform = `translate(${sourceRect.left - targetRect.left}px, ${sourceRect.top - targetRect.top}px)`;
+
+        if (sourceElement.textContent != ''){
+          sourceElement.style.transition = 'transform 0.33s ease';
+          sourceElement.style.zIndex = '2';
+        }
+        if (targetElement.textContent != ''){
+          targetElement.style.transition = 'transform 0.33s ease';
+          targetElement.style.zIndex = '2';
+        }
+
+
+        // After transition ends, swap the elements and remove the transform style
+        sourceElement.addEventListener('transitionend', function handler() {
+          sourceElement.style.transform = '';
+          targetElement.style.transform = '';
+          sourceElement.style.transition = 'transform 0s';
+          targetElement.style.transition = 'transform 0s';
+          sourceElement.style.zIndex = '1';
+          targetElement.style.zIndex = '1';
+
+          // Swap elements
+          const sourceNextSibling = sourceElement.nextSibling;
+          const targetNextSibling = targetElement.nextSibling;
+          const parent = sourceElement.parentNode;
+
+          if (sourceNextSibling === targetElement) {
+            parent.insertBefore(targetElement, sourceElement);
+          } else if (targetNextSibling === sourceElement) {
+            parent.insertBefore(sourceElement, targetElement);
+          } else {
+            parent.insertBefore(sourceElement, targetNextSibling);
+            parent.insertBefore(targetElement, sourceNextSibling);
+          }
+
+          highlightValidWords();
+
+          sourceElement.removeEventListener('transitionend', handler);
         });
+      };
+
+
+      tiles.forEach(tile => {
+        tile.setAttribute('draggable', 'true');
+        tile.addEventListener('dragstart', handleDragStart);
         tile.addEventListener('dragover', handleDragOver);
         tile.addEventListener('drop', handleDrop);
 
         // Handle touch events
         let touchSourceId = null;
 
-        tile.addEventListener('touchstart', (event) => {
-            touchSourceId = event.target.id;
+        tile.addEventListener('touchstart', event => touchSourceId = event.target.id);
+        tile.addEventListener('touchmove', event => event.preventDefault()); // prevent scrolling while moving
+        tile.addEventListener('touchend', event => {
+          event.preventDefault();  // Call preventDefault here
+          const touchTarget = document.elementFromPoint(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+          if (touchSourceId && touchTarget && touchTarget.classList.contains('tile')) {
+            handleDrop({
+              target: touchTarget,
+              dataTransfer: {
+                getData: () => touchSourceId
+              },
+              preventDefault: () => {}  // add this line to provide a no-op function for preventDefault
+            });
+          }
+          touchSourceId = null;
         });
+      });
+    }
 
-        tile.addEventListener('touchmove', (event) => {
-            event.preventDefault(); // prevent scrolling while moving
-        });
+    const resetBoard = () => {
+      const gameBoard = document.getElementById('game-board');
 
-        tile.addEventListener('touchend', (event) => {
-            const touchTarget = document.elementFromPoint(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
-            if (touchSourceId && touchTarget && touchTarget.classList.contains('tile')) {
-                draggedTileId = touchSourceId;
-                handleDrop({target: touchTarget});
-            }
-            touchSourceId = null;
-        });
+      // Remove existing tiles
+      while (gameBoard.firstChild) gameBoard.firstChild.remove();
+
+      // Generate new tiles
+      generateTiles();
+
+      const tiles = Array.from(document.querySelectorAll('.tile'));
+
+      buildBoard(tiles)
+      applyDragandTouchEvents(tiles)
+
+    }
+
+    document.addEventListener('DOMContentLoaded', event => {
+      resetBoard();
     });
 
+    document.getElementById('reset-button').addEventListener('click', resetBoard);
 
-      });
+  </script>
 
-</script>
 </body>
 </html>
