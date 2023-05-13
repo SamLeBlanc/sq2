@@ -125,13 +125,13 @@ import { applyDragandTouchEvents } from './move.js';
     document.getElementById('total-score').textContent = score[3];
   }
 
-  const highlightValidWords = () => {
+  const updateBoard = () => {
     const tiles = Array.from(document.querySelectorAll('.tile'));
     const gameBoard = document.getElementById('game-board');
 
     // Remove 'valid' and 'double-valid' class from all tiles and add 'filled' class
     tiles.forEach(tile => {
-      tile.classList.remove('valid', 'double-valid');
+      tile.classList.remove('valid', 'double-valid','triple-valid');
       if (tile.textContent.trim() !== "") {
         tile.classList.add('filled');
       }
@@ -186,19 +186,8 @@ import { applyDragandTouchEvents } from './move.js';
 
     buildBoard(tiles)
     applyDragandTouchEvents(tiles)
-    try { highlightValidWords() } catch {}
+    try { updateBoard() } catch {}
   }
-
-  document.addEventListener('DOMContentLoaded', async event => {
-    resetBoard();
-    await loadDictionary();
-    highlightValidWords()
-  });
-
-  document.getElementById('reset-button').addEventListener('click', () => {
-    resetBoard();
-    updateScoreDisplay();  // Update the score display after resetting the board
-  });
 
   let scrambleCount = 10;
 
@@ -218,7 +207,7 @@ import { applyDragandTouchEvents } from './move.js';
         tile.textContent = letters[i];
       });
 
-      highlightValidWords();
+      updateBoard();
 
       scrambleCount--;
       document.getElementById('scramble-button').textContent = `Scramble (${scrambleCount})`;
@@ -229,8 +218,20 @@ import { applyDragandTouchEvents } from './move.js';
     }
   }
 
+
+  document.addEventListener('DOMContentLoaded', async event => {
+    resetBoard();
+    await loadDictionary();
+    updateBoard()
+  });
+
+  document.getElementById('reset-button').addEventListener('click', () => {
+    resetBoard();
+    updateScoreDisplay();  // Update the score display after resetting the board
+  });
+
   document.getElementById('scramble-button').addEventListener('click', scrambleTiles);
 
 
 
-  export { highlightValidWords };
+  export { loadDictionary, resetBoard, updateBoard };

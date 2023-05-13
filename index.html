@@ -178,6 +178,9 @@
     display: flex;
     justify-content: space-between; // Adjust this to align the buttons as needed
 }
+.shadow {
+  z-index: 10;
+}
 
 
 
@@ -213,5 +216,8 @@
     </div>
 
   </div>
+  <script type="module">
+    import { loadDictionary, resetBoard, updateBoard } from './index.js';
+  </script>
 </body>
 </html>

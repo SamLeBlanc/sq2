@@ -1,5 +1,5 @@
-import { highlightValidWords } from './index.js';
-
+import { updateBoard } from './index.js';
+let shadowTile = null;
 const applyDragandTouchEvents = tiles => {
 
   const handleDragStart = event => {
@@ -60,11 +60,24 @@ const applyDragandTouchEvents = tiles => {
         parent.insertBefore(targetElement, sourceNextSibling);
       }
 
-      highlightValidWords();
+      updateBoard();
 
       sourceElement.removeEventListener('transitionend', handler);
     });
   };
+
+  const createShadowTile = () => {
+    const shadowTile = document.createElement('div');
+    shadowTile.setAttribute('class', 'tile shadow-tile');
+    shadowTile.style.opacity = '0.5';
+    shadowTile.textContent = '';
+
+    // Append the shadow tile to the game-board div instead of the document body
+    const gameBoard = document.getElementById('game-board');
+    gameBoard.appendChild(shadowTile);
+
+    return shadowTile;
+  }
 
 
   tiles.forEach(tile => {
@@ -77,16 +90,58 @@ const applyDragandTouchEvents = tiles => {
     let touchSourceId = null;
 
     tile.addEventListener('touchstart', event => {
-      // Check if the tile is not empty
-      if (event.target.textContent.trim() !== "") {
-        touchSourceId = event.target.id;
-      } else {
-        // If the tile is empty, don't store the id
-        touchSourceId = null;
-      }
-    });
-    tile.addEventListener('touchmove', event => event.preventDefault()); // prevent scrolling while moving
-    tile.addEventListener('touchend', event => {
+    // Check if the tile is not empty
+    if (event.target.textContent.trim() !== "") {
+      touchSourceId = event.target.id;
+
+      shadowTile = document.createElement('div');
+      shadowTile.className = event.target.className + ' shadow';
+      shadowTile.textContent = event.target.textContent;
+
+      // Copy the computed style of the original tile to the shadow tile
+      const tileStyle = getComputedStyle(event.target);
+      shadowTile.style.width = tileStyle.width;
+      shadowTile.style.height = tileStyle.height;
+
+      shadowTile.style.position = 'fixed';
+      shadowTile.style.opacity = '0.5';
+
+      // Subtract half the dimensions of the tile from the translate values
+      const tileWidth = parseInt(tileStyle.width, 10);
+      const tileHeight = parseInt(tileStyle.height, 10);
+      shadowTile.style.transform = `translate(${event.touches[0].clientX - tileWidth / 2}px,
+        ${event.touches[0].clientY - tileHeight / 2}px)`;
+
+      const gameBoard = document.getElementById('game-board');
+      gameBoard.appendChild(shadowTile);
+    } else {
+      // If the tile is empty, don't store the id
+      touchSourceId = null;
+    }
+  });
+
+
+   tile.addEventListener('touchmove', event => {
+     event.preventDefault(); // prevent scrolling while moving
+
+     // Move the shadow tile
+     if (shadowTile !== null) {
+       const tileStyle = getComputedStyle(event.target);
+       const tileWidth = parseInt(tileStyle.width, 10);
+       const tileHeight = parseInt(tileStyle.height, 10);
+       shadowTile.style.transform = `translate(${-10 + event.touches[0].clientX - tileWidth / 2}px,
+         ${-10 + event.touches[0].clientY - tileHeight / 2}px)`;
+     }
+   });
+
+   tile.addEventListener('touchend', event => {
+     event.preventDefault();  // Call preventDefault here
+
+     // Remove the shadow tile
+     if (shadowTile !== null) {
+       shadowTile.remove();
+       shadowTile = null;
+     }
       event.preventDefault();  // Call preventDefault here
       const touchTarget = document.elementFromPoint(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
       if (touchSourceId && touchTarget && touchTarget.classList.contains('tile')) {
