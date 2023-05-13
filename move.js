@@ -91,23 +91,6 @@ const applyDragandTouchEvents = tiles => {
       let touchStartTime = null;
       let touchTimeout = null;
 
-      tile.addEventListener('touchstart', event => {
-        // Check if the tile is not empty
-        if (event.target.textContent.trim() !== "") {
-          touchSourceId = event.target.id;
-          touchStartTime = Date.now();  // record the touch start time
-
-          // Set a timeout for 250ms before creating the shadow tile
-          touchTimeout = setTimeout(() => {
-            // Existing code to create and move shadow tile
-            // ...
-          }, 250);  // 250ms delay
-        } else {
-          // If the tile is empty, don't store the id
-          touchSourceId = null;
-        }
-      });
-
     tile.addEventListener('touchstart', event => {
       // Check if the tile is not empty
       if (event.target.textContent.trim() !== "") {
@@ -130,7 +113,7 @@ const applyDragandTouchEvents = tiles => {
 
           shadowTile.style.position = 'fixed';
           shadowTile.style.opacity = '0.5';
-          shadowTile.style.transform = `translate(${event.touches[0].clientX - (2*tileWidth)}px, ${event.touches[0].clientY - (2*tileHeight)}px)`;
+          shadowTile.style.transform = `translate(${event.touches[0].clientX - (1.5*tileWidth)}px, ${event.touches[0].clientY - (1.5*tileHeight)}px)`;
 
           const gameBoard = document.getElementById('game-board');
           gameBoard.appendChild(shadowTile);
@@ -147,7 +130,7 @@ const applyDragandTouchEvents = tiles => {
       // Move the shadow tile
       if (shadowTile !== null) {
         // Subtract half the size of the tile to center the shadow tile under the finger
-        shadowTile.style.transform = `translate(${event.touches[0].clientX - (shadowTile.offsetWidth * 2)}px, ${event.touches[0].clientY - (shadowTile.offsetHeight * 2)}px)`;
+        shadowTile.style.transform = `translate(${event.touches[0].clientX - (1.5*shadowTile.offsetWidth)}px, ${event.touches[0].clientY - (1.5*shadowTile.offsetHeight)}px)`;
       }
     });
 
