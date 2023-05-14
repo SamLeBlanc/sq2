@@ -3,7 +3,6 @@ import DataLoader from './data.js';
 
 let shadowTile = null;
 
-
 class Board {
   constructor() {
     // Load the counts from localStorage, or initialize them to 0 if they don't exist
@@ -155,7 +154,6 @@ class Board {
   }
 
   updateBoard() {
-    console.log('updating')
     const tiles = Array.from(document.querySelectorAll('.tile'));
     const gameBoard = document.getElementById('game-board');
 
@@ -353,6 +351,8 @@ class Board {
 
     const handleTouchStart = event => {
 
+      let touchStartTime = Date.now()
+
       const createShadowTile = (target, touch) => {
         const shadowTile = document.createElement('div');
         shadowTile.className = target.className + ' shadow';
@@ -385,7 +385,7 @@ class Board {
         // Set a timeout for half a second before creating the shadow tile
         touchTimeout = setTimeout(() => {
           shadowTile = createShadowTile(event.target, event.touches[0]);
-        }, 200);
+        }, 333);
       } else {
         touchSourceId = null;
       }
@@ -401,9 +401,8 @@ class Board {
     }
 
     const handleTouchEnd = event => {
-      console.log('touchend');
 
-      // Clear the timeout if the touch event ends before 200ms
+      // Clear the timeout if the touch event ends before 333ms
       clearTimeout(touchTimeout);
 
       const touchDuration = Date.now() - touchStartTime;
@@ -421,12 +420,20 @@ class Board {
         touchSourceId = null;
       };
 
+      const moveTileDirectly = (sourceId, target) => {
+        if (sourceId && target && target.classList.contains('tile')) {
+          const sourceElement = document.getElementById(sourceId);
+          sourceElement.textContent = '';
+          target.textContent = sourceElement.textContent;
+        }
+        touchSourceId = null;
+      };
+
       const getTouchTarget = (shadowTile) => {
         if (shadowTile == null) {
           return document.elementFromPoint(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
         } else {
           let shadowTileRect = shadowTile.getBoundingClientRect();
-          console.log(shadowTileRect);
 
           // Remove the shadow tile
           shadowTile.remove();
@@ -438,10 +445,16 @@ class Board {
       };
 
       const touchTarget = getTouchTarget(shadowTile);
-      finalizeDrop(touchSourceId, touchTarget);
 
-      event.preventDefault();  // Call preventDefault here
-    }
+      if (touchDuration < 333) {
+        console.log('shorttouch')
+        moveTileDirectly(touchSourceId, touchTarget);
+      } else {
+        finalizeDrop(touchSourceId, touchTarget);
+      }
+
+      event.preventDefault();
+    };
 
 
     tiles.forEach(tile => {
