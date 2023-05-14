@@ -9,7 +9,7 @@ class Board {
     this.puzzleWords;
 
     this.transitionSpeed = 500 //ms
-    this.shadowTileDelay = 666;
+    this.shadowTileDelay = 500;
 
     this.shadowTile;
     this.touchStartTime;
@@ -226,6 +226,7 @@ class Board {
 
     const gameBoard = document.getElementById('game-board');
 
+
     // Remove existing tiles
     while (gameBoard.firstChild) gameBoard.firstChild.remove();
 
@@ -350,47 +351,59 @@ class Board {
 
     const handleTouchStart = event => {
 
-      this.touchStartTime = Date.now()
+        this.touchStartTime = Date.now();
 
-      const createShadowTile = (target, touch) => {
-        const shadowTile = document.createElement('div');
-        shadowTile.className = target.className + ' shadow';
-        shadowTile.textContent = target.textContent;
+        let currentTouch = event.touches[0];  // Save the initial touch
 
-        // Copy the computed style of the original tile to the shadow tile
-        const tileStyle = getComputedStyle(target);
-        let tileWidth = parseInt(tileStyle.width);
-        let tileHeight = parseInt(tileStyle.height);
+        const handleTouchMove = moveEvent => {
+          currentTouch = moveEvent.touches[0];  // Update to the latest touch
+        };
 
-        // Set shadow tile styles
-        Object.assign(shadowTile.style, {
-          width: `${tileWidth}px`,
-          height: `${tileHeight}px`,
-          position: 'fixed',
-          opacity: '0.5',
-          transform: `translate(${touch.clientX - (1.5 * tileWidth)}px, ${touch.clientY - (1.5 * tileHeight)}px)`
-        });
+        // Add touchmove listener
+        document.addEventListener('touchmove', handleTouchMove);
 
-        const gameBoard = document.getElementById('game-board');
-        gameBoard.appendChild(shadowTile);
+        const createShadowTile = (target, touch) => {
+          const shadowTile = document.createElement('div');
+          shadowTile.className = target.className + ' shadow';
+          shadowTile.textContent = target.textContent;
 
-        return shadowTile;
-      }
+          // Copy the computed style of the original tile to the shadow tile
+          const tileStyle = getComputedStyle(target);
+          let tileWidth = parseInt(tileStyle.width);
+          let tileHeight = parseInt(tileStyle.height);
 
-      // Check if the tile is not empty
-      if (event.target.textContent.trim() !== "") {
-        this.touchSourceId = event.target.id;
+          // Set shadow tile styles
+          Object.assign(shadowTile.style, {
+            width: `${tileWidth}px`,
+            height: `${tileHeight}px`,
+            position: 'fixed',
+            opacity: '0.5',
+            transform: `translate(${touch.clientX - (1.5 * tileWidth)}px, ${touch.clientY - (1.5 * tileHeight)}px)`
+          });
 
-        // Set a timeout for half a second before creating the shadow tile
-        this.touchTimeout = setTimeout(() => {
-          this.shadowTile = createShadowTile(event.target, event.touches[0]);
-        }, this.shadowTileDelay);
-      } else {
-        this.touchSourceId = null;
-      }
+          const gameBoard = document.getElementById('game-board');
+          gameBoard.appendChild(shadowTile);
 
-      event.preventDefault();
+          return shadowTile;
+        }
+
+        // Check if the tile is not empty
+        if (event.target.textContent.trim() !== "") {
+          this.touchSourceId = event.target.id;
+
+          // Set a timeout for half a second before creating the shadow tile
+          this.touchTimeout = setTimeout(() => {
+            this.shadowTile = createShadowTile(event.target, currentTouch);
+            // Remove the touchmove listener once the shadow tile is created
+            document.removeEventListener('touchmove', handleTouchMove);
+          }, this.shadowTileDelay);
+        } else {
+          this.touchSourceId = null;
+        }
+
+        event.preventDefault();
     }
+
 
     const handleTouchMove = event => {
       event.preventDefault(); // prevent scrolling while moving

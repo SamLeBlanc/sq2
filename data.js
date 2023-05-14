@@ -10,7 +10,9 @@ class DataLoader {
     return fetch('data//words.json') // Return the Promise from fetch
       .then(response => response.json())
       .then(jsonData => {
-        this.dictionary = new Set(Object.keys(jsonData));
+        const words = Object.keys(jsonData);
+        const shortWords = words.filter(word => word.length <= 7);
+        this.dictionary = new Set(shortWords);
       })
       .catch(error => console.error(error));
   }
