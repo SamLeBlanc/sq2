@@ -39,7 +39,7 @@ const buildBoard = tiles => {
 
   // Get the puzzle corresponding to the random key
   let puzzle = puzzles[randomKey];
-  document.getElementById('puzzle-id').textContent = 'Puzzle ID: ' +  randomKey;
+  document.getElementById('puzzle-id').textContent = '#' +  randomKey;
   let letters = [...puzzle].sort(() => Math.random() - 0.5);
 
   // Initialize puzzleWords and add every 5-letter word in the puzzle ID
@@ -202,40 +202,7 @@ const updateBoard = () => {
 
 updateScoreDisplay();  // Update the score display after highlighting valid words
 
-  const words = findWords();
-  const tileCounts = {};
-
-  words.forEach(({ids, valid}) => {
-    if (valid) {
-      ids.forEach(id => {
-        let tile = document.getElementById(id);
-        tileCounts[id] = (tileCounts[id] || 0) + 1;
-      });
-    }
-  });
-
-  Object.entries(tileCounts).forEach(([id, count]) => {
-    let tile = document.getElementById(id);
-    if (count === 1) {
-      tile.classList.add('valid');
-      tile.classList.remove('filled');
-    } else if (count >= 2) {
-      tile.classList.add('double-valid');
-      tile.classList.remove('filled');
-
-      let rect = tile.getBoundingClientRect();
-      let boardRect = gameBoard.getBoundingClientRect();
-      let row = Math.floor((rect.top - boardRect.top) / rect.height);
-      let col = Math.floor((rect.left - boardRect.left) / rect.width);
-
-      if (row >= 1 && row <= 5 && col >= 1 && col <= 5) {
-        tile.classList.remove('double-valid');
-        tile.classList.add('triple-valid');
-      }
-    }
-  });
-
-  updateScoreDisplay();  // Update the score display after highlighting valid words
+})
 }
 
 const resetBoard = () => {
@@ -245,12 +212,12 @@ const resetBoard = () => {
   while (gameBoard.firstChild) gameBoard.firstChild.remove();
 
   // Generate new tiles
-    generateTiles();
+  generateTiles();
 
   const tiles = Array.from(document.querySelectorAll('.tile'));
 
-  buildBoard(tiles)
-  applyDragandTouchEvents(tiles)
+  buildBoard(tiles);
+  applyDragandTouchEvents(tiles);
   try { updateBoard() } catch {}
 }
 
@@ -283,14 +250,12 @@ const scrambleTiles = () => {
   }
 }
 
-
 document.addEventListener('DOMContentLoaded', async event => {
   await loadPuzzles();
   resetBoard();
   await loadDictionary();
   updateBoard();
 });
-
 
 document.getElementById('reset-button').addEventListener('click', () => {
   resetBoard();
