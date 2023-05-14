@@ -8,8 +8,8 @@ class Board {
     this.shuffleCount = Storage.shuffleCount;
     this.puzzleWords;
 
-    this.transitionSpeed = 333 //ms
-    this.shadowTileDelay = 300;
+    this.transitionSpeed = 500 //ms
+    this.shadowTileDelay = 666;
 
     this.shadowTile;
     this.touchStartTime;
