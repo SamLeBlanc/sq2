@@ -287,8 +287,8 @@ const scrambleTiles = () => {
 
 document.addEventListener('DOMContentLoaded', async event => {
   await loadPuzzles();
+  await loadDictionary(); // make sure to load dictionary before resetting board
   resetBoard();
-  await loadDictionary();
   updateBoard();
 });
 
