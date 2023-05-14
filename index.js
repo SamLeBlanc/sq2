@@ -12,12 +12,13 @@ const loadDictionary = () => {
     .catch(error => console.error(error));
 }
 const loadPuzzles = () => {
-    return fetch('puzzles.json') // Return the Promise from fetch
-      .then(response => response.json())
-      .then(jsonData => {
-        puzzles = jsonData;
-      })
-      .catch(error => console.error(error));
+  return fetch('puzzles.json')
+    .then(response => response.json())
+    .then(jsonData => {
+      puzzles = jsonData;
+      console.log('Puzzles loaded:', puzzles); // add this
+    })
+    .catch(error => console.error(error));
 }
 
 const generateTiles = () => {
@@ -69,6 +70,7 @@ const buildBoard = tiles => {
       tile.classList.add('empty');
     }
   });
+  console.log('Board built with tiles:', tiles);
 }
 
 const findWords = () => {
@@ -153,7 +155,6 @@ const updateScoreDisplay = () => {
   document.getElementById('total-score').textContent = score[3];
 }
 
-// Update updateBoard function to handle 'correct-valid' class
 const updateBoard = () => {
   const tiles = Array.from(document.querySelectorAll('.tile'));
   const gameBoard = document.getElementById('game-board');
@@ -164,23 +165,23 @@ const updateBoard = () => {
     if (tile.textContent.trim() !== "") {
       tile.classList.add('filled');
     }
+  });
 
-    const words = findWords();
-    const tileCounts = {};
+  const words = findWords();
+  const tileCounts = {};
 
-    words.forEach(({ids, valid, word}) => { // add 'word' to the destructuring
-      if (valid) {
-        ids.forEach(id => {
-          let tile = document.getElementById(id);
-          tileCounts[id] = (tileCounts[id] || 0) + 1;
+  words.forEach(({ids, valid, word}) => {
+    if (valid) {
+      ids.forEach(id => {
+        let tile = document.getElementById(id);
+        tileCounts[id] = (tileCounts[id] || 0) + 1;
 
-          // Check if the word is one of the 5-letter words in the puzzle ID
-          if (puzzleWords.has(word) && word.length === 5) {
-            tile.classList.add('correct-valid');
-          }
-        });
-      }
-    });
+        if (puzzleWords.has(word) && word.length === 5) {
+          tile.classList.add('correct-valid');
+        }
+      });
+    }
+  });
 
   Object.entries(tileCounts).forEach(([id, count]) => {
     let tile = document.getElementById(id);
@@ -202,7 +203,8 @@ const updateBoard = () => {
     }
   });
 
-updateScoreDisplay();  // Update the score display after highlighting valid words
+  updateScoreDisplay();
+}
 
   const words = findWords();
   const tileCounts = {};
@@ -289,7 +291,7 @@ const scrambleTiles = () => {
 
 document.addEventListener('DOMContentLoaded', async event => {
   await loadPuzzles();
-  await loadDictionary(); // make sure to load dictionary before resetting board
+  await loadDictionary();
   resetBoard();
   updateBoard();
 });
