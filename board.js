@@ -4,6 +4,8 @@ import DataLoader from './data.js';
 class Board {
   constructor() {
     // Load the counts from localStorage, or initialize them to 0 if they don't exist
+    this.undoLastMove = this.undoLastMove.bind(this);  // bind the method to the instance
+
     this.resetCount = Storage.resetCount;
     this.shuffleCount = Storage.shuffleCount;
     this.puzzleWords;
@@ -15,6 +17,8 @@ class Board {
     this.touchStartTime;
     this.touchSourceId;
     this.touchTimeout;
+
+    this.moveHistory = []; // move history
 
   }
 
@@ -282,6 +286,79 @@ class Board {
 
   }
 
+  swapAndAnimateElements(sourceElement, targetElement) {
+    // Animation
+    const sourceRect = sourceElement.getBoundingClientRect();
+    const targetRect = targetElement.getBoundingClientRect();
+
+    this.animateElementStyle(sourceElement, `translate(${targetRect.left - sourceRect.left}px, ${targetRect.top - sourceRect.top}px)`, this.transitionSpeed);
+    this.animateElementStyle(targetElement, `translate(${sourceRect.left - targetRect.left}px, ${sourceRect.top - targetRect.top}px)`, this.transitionSpeed);
+
+    // Create the transitionend event handler
+    const handler = function () {
+      this.resetElementStyle(sourceElement);
+      this.resetElementStyle(targetElement);
+
+      // Swap elements
+      this.swapElements(sourceElement, targetElement);
+
+      // Remove this event listener
+      sourceElement.removeEventListener('transitionend', handler);
+
+    }.bind(this);
+
+    // Remove any existing transitionend event listener before adding a new one
+    sourceElement.removeEventListener('transitionend', handler);
+    sourceElement.addEventListener('transitionend', handler);
+  }
+
+  animateElementStyle(element, transform, transitionSpeed) {
+    if (element.textContent != '') {
+      element.style.transform = transform;
+      element.style.transition = `transform ${transitionSpeed}ms ease`;
+      element.style.zIndex = '2';
+    }
+  }
+
+  resetElementStyle(element) {
+    const tiles = Array.from(document.querySelectorAll('.tile'));
+    tiles.forEach(tile => {
+      tile.style.transform = '';
+      tile.style.transition = 'transform 0s';
+      tile.style.zIndex = '1';
+    });
+  }
+
+  swapElements(sourceElement, targetElement) {
+    const sourceNextSibling = sourceElement.nextSibling;
+    const targetNextSibling = targetElement.nextSibling;
+    const parent = sourceElement.parentNode;
+
+    if (sourceNextSibling === targetElement) {
+      parent.insertBefore(targetElement, sourceElement);
+    } else if (targetNextSibling === sourceElement) {
+      parent.insertBefore(sourceElement, targetElement);
+    } else {
+      parent.insertBefore(sourceElement, targetNextSibling);
+      parent.insertBefore(targetElement, sourceNextSibling);
+    }
+  }
+
+  undoLastMove() {
+    if (this.moveHistory.length > 0) {
+      const lastMove = this.moveHistory.pop();
+      let sourceElement = document.getElementById(lastMove.source);
+      let targetElement = document.getElementById(lastMove.target);
+
+      this.swapAndAnimateElements(sourceElement, targetElement);
+
+      setTimeout(() => {
+        this.updateBoard()
+      }, this.transitionSpeed + 100);
+    }
+  }
+
+
   applyDragandTouchEvents() {
 
     const tiles = Array.from(document.querySelectorAll('.tile'));
@@ -298,57 +375,53 @@ class Board {
 
     const handleDragMove = event => event.preventDefault();
 
-    const animateElementStyle = (element, transform, transitionSpeed) => {
-      if (element.textContent != '') {
-        element.style.transform = transform;
-        element.style.transition = `transform ${transitionSpeed}ms ease`;
-        element.style.zIndex = '2';
-      }
-    }
-
-    const resetElementStyle = (element) => {
-      element.style.transform = '';
-      element.style.transition = 'transform 0s';
-      element.style.zIndex = '1';
-    }
-
-    const swapElements = (sourceElement, targetElement) => {
-      const sourceNextSibling = sourceElement.nextSibling;
-      const targetNextSibling = targetElement.nextSibling;
-      const parent = sourceElement.parentNode;
-
-      if (sourceNextSibling === targetElement) {
-        parent.insertBefore(targetElement, sourceElement);
-      } else if (targetNextSibling === sourceElement) {
-        parent.insertBefore(sourceElement, targetElement);
-      } else {
-        parent.insertBefore(sourceElement, targetNextSibling);
-        parent.insertBefore(targetElement, sourceNextSibling);
-      }
-    }
+    // const animateElementStyle = (element, transform, transitionSpeed) => {
+    //   if (element.textContent != '') {
+    //     element.style.transform = transform;
+    //     element.style.transition = `transform ${transitionSpeed}ms ease`;
+    //     element.style.zIndex = '2';
+    //   }
+    // }
+    //
+    // const resetElementStyle = element => {
+    //   const tiles = Array.from(document.querySelectorAll('.tile'));
+    //   tiles.forEach(tile => {
+    //     tile.style.transform = '';
+    //     tile.style.transition = 'transform 0s';
+    //     tile.style.zIndex = '1';
+    //   })
+    // }
+    //
+    // const swapElements = (sourceElement, targetElement) => {
+    //   console.log('swap')
+    //   const sourceNextSibling = sourceElement.nextSibling;
+    //   const targetNextSibling = targetElement.nextSibling;
+    //   const parent = sourceElement.parentNode;
+    //
+    //   if (sourceNextSibling === targetElement) {
+    //     parent.insertBefore(targetElement, sourceElement);
+    //   } else if (targetNextSibling === sourceElement) {
+    //     parent.insertBefore(sourceElement, targetElement);
+    //   } else {
+    //     parent.insertBefore(sourceElement, targetNextSibling);
+    //     parent.insertBefore(targetElement, sourceNextSibling);
+    //   }
+    // }
 
     const handleDrop = event => {
       event.preventDefault();
-      const sourceElement = document.getElementById(event.dataTransfer.getData('text/plain'));
-      const targetElement = event.target;
+      let sourceElement = document.getElementById(event.dataTransfer.getData('text/plain'));
+      let targetElement = event.target;
 
-      // Animation
-      const sourceRect = sourceElement.getBoundingClientRect();
-      const targetRect = targetElement.getBoundingClientRect();
+      this.swapAndAnimateElements(sourceElement, targetElement);
 
-      animateElementStyle(sourceElement, `translate(${targetRect.left - sourceRect.left}px, ${targetRect.top - sourceRect.top}px)`, this.transitionSpeed);
-      animateElementStyle(targetElement, `translate(${sourceRect.left - targetRect.left}px, ${sourceRect.top - targetRect.top}px)`, this.transitionSpeed);
-
-      // After transition ends, swap the elements and remove the transform style
-      sourceElement.addEventListener('transitionend', function handler() {
-        resetElementStyle(sourceElement);
-        resetElementStyle(targetElement);
-
-        // Swap elements
-        swapElements(sourceElement, targetElement);
-
-        sourceElement.removeEventListener('transitionend', handler);
-      });
+      // Record the move
+      if (targetElement != sourceElement){
+        this.moveHistory.push({
+          source: sourceElement.id,
+          target: targetElement.id,
+        });
+      }
 
       setTimeout(() => {
         this.updateBoard()
@@ -413,7 +486,6 @@ class Board {
         event.preventDefault();
     }
 
-
     const handleTouchMove = event => {
       event.preventDefault(); // prevent scrolling while moving
       if (this.shadowTile != null) {
@@ -468,6 +540,32 @@ class Board {
 
       event.preventDefault();
     };
+
+    // const undoLastMove = () => {
+    //   if (this.moveHistory.length > 0) {
+    //     const { sourceElement, targetElement } = this.moveHistory.pop();
+    //
+    //     // Swap the elements back to their original positions
+    //     swapElements(sourceElement, targetElement);
+    //
+    //     // Animate the swap
+    //     const sourceRect = sourceElement.getBoundingClientRect();
+    //     const targetRect = targetElement.getBoundingClientRect();
+    //     animateElementStyle(sourceElement, `translate(${targetRect.left - sourceRect.left}px, ${targetRect.top - sourceRect.top}px)`, this.transitionSpeed);
+    //     animateElementStyle(targetElement, `translate(${sourceRect.left - targetRect.left}px, ${sourceRect.top - targetRect.top}px)`, this.transitionSpeed);
+    //
+    //     // After transition ends, remove the transform style
+    //     sourceElement.addEventListener('transitionend', function handler() {
+    //       resetElementStyle(sourceElement);
+    //       resetElementStyle(targetElement);
+    //       sourceElement.removeEventListener('transitionend', handler);
+    //     });
+    //
+    //     setTimeout(() => {
+    //       this.updateBoard()
+    //     }, this.transitionSpeed + 100);
+    //   }
+    // }
 
 
     tiles.forEach(tile => {

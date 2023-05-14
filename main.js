@@ -20,4 +20,10 @@ document.getElementById('shuffle-button').addEventListener('click', () => {
   Board.updateBoard();
 });
 
+document.getElementById('undo-button').addEventListener('click', () => {
+  Board.undoLastMove();
+  Board.updateBoard();
+});
+
+
 window.Board = Board;  // Make Board interactable in the console
