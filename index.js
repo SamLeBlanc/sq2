@@ -40,7 +40,12 @@ const buildBoard = tiles => {
   // Get the puzzle corresponding to the random key
   let puzzle = puzzles[randomKey];
   document.getElementById('puzzle-id').textContent = 'Puzzle ID: ' +  randomKey;
-  let letters = [...puzzle].sort(() => Math.random() - 0.5);
+
+  // Convert puzzle string into array of letters
+  let letters = [...puzzle].filter(letter => letter !== '0').sort(() => Math.random() - 0.5);
+
+  // Get the indices for the filled tiles
+  let filledIndices = [...puzzle].map((letter, index) => letter !== '0' ? index : -1).filter(index => index !== -1);
 
   // Initialize puzzleWords and add every 5-letter word in the puzzle ID
   puzzleWords = new Set(); // initialize puzzleWords
@@ -50,9 +55,6 @@ const buildBoard = tiles => {
           puzzleWords.add(word);
       }
   }
-
-  // For example, let's assume that each puzzle is an object containing an array of letters and filled indices
-   let filledIndices = [8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 36, 37, 38, 39, 40];
 
   // Assign letters to tiles and color them grey
   filledIndices.forEach((index, i) => {
