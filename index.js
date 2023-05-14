@@ -42,6 +42,13 @@ import { applyDragandTouchEvents } from './move.js';
     document.getElementById('puzzle-id').textContent = 'Puzzle ID: ' +  randomKey;
     let letters = [...puzzle].sort(() => Math.random() - 0.5);
 
+    // Add every 5-letter word in the puzzle ID to the dictionary
+    for (let i = 0; i < puzzle.length; i += 5) {
+        let word = puzzle.substr(i, 5);
+        if (!dictionary.has(word)) {
+            dictionary.add(word);
+        }
+    }
 
     // For example, let's assume that each puzzle is an object containing an array of letters and filled indices
      let filledIndices = [8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 36, 37, 38, 39, 40];
@@ -156,6 +163,17 @@ import { applyDragandTouchEvents } from './move.js';
       tile.classList.remove('valid', 'double-valid','triple-valid');
       if (tile.textContent.trim() !== "") {
         tile.classList.add('filled');
+
+    words.forEach(({word, ids, valid}) => {
+      if (valid) {
+        ids.forEach(id => {
+          let tile = document.getElementById(id);
+          tileCounts[id] = (tileCounts[id] || 0) + 1;
+
+          // Check if the word is one of the 5-letter words in the puzzle ID
+          if (dictionary.has(word) && word.length === 5) {
+            tile.classList.add('correct-valid');
+
       }
     });
 
