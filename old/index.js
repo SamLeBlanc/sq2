@@ -136,10 +136,10 @@ const calculateScore = () => {
     if (tile.classList.contains('valid')) {
       score[0] += 1;
     }
-    if (tile.classList.contains('double-valid')) {
+    if (tile.classList.contains('double')) {
       score[1] += 1;
     }
-    if (tile.classList.contains('triple-valid')) {
+    if (tile.classList.contains('triple')) {
       score[2] += 1;
     }
     score[3] = score[0] + 2*score[1] + 3*score[2]
@@ -155,14 +155,14 @@ const updateScoreDisplay = () => {
   document.getElementById('total-score').textContent = score[3];
 }
 
-// Update updateBoard function to handle 'correct-valid' class
+// Update updateBoard function to handle 'correct' class
 const updateBoard = () => {
   const tiles = Array.from(document.querySelectorAll('.tile'));
   const gameBoard = document.getElementById('game-board');
 
-  // Remove 'valid' and 'double-valid' class from all tiles and add 'filled' class
+  // Remove 'valid' and 'double' class from all tiles and add 'filled' class
   tiles.forEach(tile => {
-    tile.classList.remove('valid', 'double-valid','triple-valid', 'correct-valid');
+    tile.classList.remove('valid', 'double','triple', 'correct');
     if (tile.textContent.trim() !== "") {
       tile.classList.add('filled');
     }
@@ -178,7 +178,7 @@ const updateBoard = () => {
 
           // Check if the word is one of the 5-letter words in the puzzle ID
           if (puzzleWords.has(word) && word.length === 5) {
-            tile.classList.add('correct-valid');
+            tile.classList.add('correct');
           }
         });
       }
@@ -190,7 +190,7 @@ const updateBoard = () => {
       tile.classList.add('valid');
       tile.classList.remove('filled');
     } else if (count >= 2) {
-      tile.classList.add('double-valid');
+      tile.classList.add('double');
       tile.classList.remove('filled');
       let rect = tile.getBoundingClientRect();
       let boardRect = gameBoard.getBoundingClientRect();
@@ -198,8 +198,8 @@ const updateBoard = () => {
       let col = Math.floor((rect.left - boardRect.left) / rect.width);
 
       if (row >= 1 && row <= 5 && col >= 1 && col <= 5) {
-        tile.classList.remove('double-valid');
-        tile.classList.add('triple-valid');
+        tile.classList.remove('double');
+        tile.classList.add('triple');
       }
     }
   });
@@ -246,7 +246,7 @@ const shuffleTiles = () => {
     localStorage.setItem('shuffleCount', shuffleCount);
 
     const tiles = Array.from(document.querySelectorAll('.tile'));
-    const nonValidTiles = tiles.filter(tile => !tile.classList.contains('valid') && !tile.classList.contains('double-valid') && !tile.classList.contains('triple-valid') && tile.textContent.trim() !== "");
+    const nonValidTiles = tiles.filter(tile => !tile.classList.contains('valid') && !tile.classList.contains('double') && !tile.classList.contains('triple') && tile.textContent.trim() !== "");
 
     const letters = nonValidTiles.map(tile => tile.textContent);
 

@@ -124,20 +124,24 @@ body {
     background-color: white;
 }
 
-.valid {
-  background-color: #f7b801;
+.single {
+  background-color: yellow;
 }
 
-.double-valid {
-  background-color: #f18701;
+.double {
+  background-color: orange;
 }
 
-.triple-valid {
-  background-color: #f35b04;
+.triple {
+  background-color: red;
 }
 
-.correct-valid {
-  background-color: green;
+.quadruple {
+  background-color: purple;
+}
+
+.correct {
+  border: green solid 2px;
 }
 
 
@@ -165,7 +169,7 @@ button:disabled {
 
 button:hover,
 button:focus {
-  background-color: transparent;
+  background-color: yellow;
 }
 
 button:focus {
@@ -173,7 +177,7 @@ button:focus {
 }
 
 button:active {
-  background-color: #45a049; /* This is optional, to show a color when the button is actively being clicked */
+  background-color: yellow; /* This is optional, to show a color when the button is actively being clicked */
 }
 
 

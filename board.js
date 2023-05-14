@@ -132,19 +132,22 @@ class Board {
   }
 
   calculateScore() {
-    let score = [0,0,0,0];
+    let score = [0,0,0,0,0];
     const tiles = Array.from(document.querySelectorAll('.tile'));
       tiles.forEach(tile => {
-      if (tile.classList.contains('valid')) {
+      if (tile.classList.contains('single')) {
         score[0] += 1;
       }
-      if (tile.classList.contains('double-valid')) {
+      if (tile.classList.contains('double')) {
         score[1] += 1;
       }
-      if (tile.classList.contains('triple-valid')) {
+      if (tile.classList.contains('triple')) {
         score[2] += 1;
       }
-      score[3] = score[0] + 2*score[1] + 3*score[2]
+      if (tile.classList.contains('quadruple')) {
+        score[3] += 1;
+      }
+      score[4] = score[0] + 2*score[1] + 3*score[2] + 4*score[3]
     });
     return score;
   }
@@ -154,7 +157,8 @@ class Board {
     document.getElementById('score-value-1').textContent = 'x ' + score[0];
     document.getElementById('score-value-2').textContent = 'x ' + score[1];
     document.getElementById('score-value-3').textContent = 'x ' + score[2];
-    document.getElementById('total-score').textContent = score[3];
+    document.getElementById('score-value-4').textContent = 'x ' + score[3];
+    document.getElementById('total-score').textContent = score[4];
   }
 
   updateBoard() {
@@ -163,7 +167,7 @@ class Board {
 
     const resetTileClasses = tiles => {
       tiles.forEach(tile => {
-        tile.classList.remove('valid', 'double-valid','triple-valid', 'correct-valid');
+        tile.classList.remove('single', 'double','triple','quadruple', 'correct');
         if (tile.textContent.trim() !== "") {
           tile.classList.add('filled');
         }
@@ -174,45 +178,47 @@ class Board {
       const words = this.findWords();
       const tileCounts = {};
 
-      words.forEach(({ids, valid, word}) => {
+      words.forEach(({ ids, valid, word }) => {
         if (valid) {
           ids.forEach(id => {
             let tile = document.getElementById(id);
             tileCounts[id] = (tileCounts[id] || 0) + 1;
             if (this.puzzleWords.has(word) && word.length === 5) {
-              tile.classList.add('correct-valid');
+              tile.classList.add('correct');
             }
           });
         }
       });
 
-      updateTileClassBasedOnCount(tileCounts, gameBoard);
+      assignTileClasses(tileCounts, gameBoard);
     }
 
-    const updateTileClassBasedOnCount = (tileCounts, gameBoard) => {
+    const assignTileClasses = (tileCounts, gameBoard) => {
       Object.entries(tileCounts).forEach(([id, count]) => {
         let tile = document.getElementById(id);
-        tile.classList.remove('filled');
+        // reset all classes to default
+        tile.classList.remove('filled', 'single', 'double', 'triple', 'quadruple','correct');
+
+        // get tile position
+        const rect = tile.getBoundingClientRect();
+        const boardRect = gameBoard.getBoundingClientRect();
+        const row = Math.floor((rect.top - boardRect.top) / rect.height);
+        const col = Math.floor((rect.left - boardRect.left) / rect.width);
+
+        // check if tile is inner tile
+        const isInnerTile = (row >= 1 && row <= 5 && col >= 1 && col <= 5);
+
+        // assign classes based on count and whether it's an inner tile
         if (count === 1) {
-          tile.classList.add('valid');
+          tile.classList.add(isInnerTile ? 'triple' : 'single');
         } else if (count >= 2) {
-          tile.classList.add('double-valid');
-          adjustClassForInnerTiles(tile, gameBoard);
+          tile.classList.add(isInnerTile ? 'quadruple' : 'double');
+        } else {
+          tile.classList.add('filled');
         }
       });
     }
 
-    const adjustClassForInnerTiles = (tile, gameBoard) => {
-      let rect = tile.getBoundingClientRect();
-      let boardRect = gameBoard.getBoundingClientRect();
-      let row = Math.floor((rect.top - boardRect.top) / rect.height);
-      let col = Math.floor((rect.left - boardRect.left) / rect.width);
-
-      if (row >= 1 && row <= 5 && col >= 1 && col <= 5) {
-        tile.classList.remove('double-valid');
-        tile.classList.add('triple-valid');
-      }
-    }
 
     resetTileClasses(tiles);
     highlightValidWords(tiles, gameBoard);
@@ -255,7 +261,7 @@ class Board {
     this.shuffleCount++;
 
     const tiles = Array.from(document.querySelectorAll('.tile'));
-    const nonValidTiles = tiles.filter(tile => !tile.classList.contains('valid') && !tile.classList.contains('double-valid') && !tile.classList.contains('triple-valid') && tile.textContent.trim() !== "");
+    const nonValidTiles = tiles.filter(tile => tile.classList.contains('filled') && tile.textContent.trim() !== "");
 
     const letters = nonValidTiles.map(tile => tile.textContent);
 
@@ -381,6 +387,9 @@ class Board {
             transform: `translate(${touch.clientX - (1.5 * tileWidth)}px, ${touch.clientY - (1.5 * tileHeight)}px)`
           });
 
+          // Make the original tile invisible
+          target.style.opacity = '0.5';
+
           const gameBoard = document.getElementById('game-board');
           gameBoard.appendChild(shadowTile);
 
@@ -422,6 +431,8 @@ class Board {
 
       const finalizeDrop = (sourceId, target) => {
         if (sourceId && target && target.classList.contains('tile')) {
+          document.getElementById(sourceId).style.opacity = '1';
+
           handleDrop({
             target: target,
             dataTransfer: {
