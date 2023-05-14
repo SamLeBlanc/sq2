@@ -1,5 +1,9 @@
 import { applyDragandTouchEvents } from './move.js';
 
+let resetCount = localStorage.getItem('resetCount') || '0';
+let shuffleCount = localStorage.getItem('shuffleCount') || '0';
+let puzzleNumber = localStorage.getItem('puzzleNumber') || '1';
+
 let dictionary;
 let puzzles;
 let puzzleWords; // new set to store 5-letter words from the current puzzle
@@ -211,6 +215,11 @@ const resetBoard = () => {
   // Remove existing tiles
   while (gameBoard.firstChild) gameBoard.firstChild.remove();
 
+  resetCount++;
+  localStorage.setItem('resetCount', resetCount);
+  updateResetText()
+  updateShuffleText()
+
   // Generate new tiles
   generateTiles();
 
@@ -221,10 +230,21 @@ const resetBoard = () => {
   try { updateBoard() } catch {}
 }
 
-let scrambleCount = 10;
+const updateShuffleText = () => {
+  let shuffleButtonText = resetCount > 0 ? `Shuffle (${shuffleCount})` : 'Shuffle'
+  document.getElementById('shuffle-button').textContent = shuffleButtonText;
+}
 
-const scrambleTiles = () => {
-  if (scrambleCount > 0) {
+const updateResetText = () => {
+  let resetButtonText = resetCount > 0 ? `Reset (${resetCount})` : 'Reset'
+  document.getElementById('reset-button').textContent = resetButtonText;
+
+}
+
+const shuffleTiles = () => {
+    shuffleCount++;
+    localStorage.setItem('shuffleCount', shuffleCount);
+
     const tiles = Array.from(document.querySelectorAll('.tile'));
     const nonValidTiles = tiles.filter(tile => !tile.classList.contains('valid') && !tile.classList.contains('double-valid') && !tile.classList.contains('triple-valid') && tile.textContent.trim() !== "");
 
@@ -233,20 +253,13 @@ const scrambleTiles = () => {
     for (let i = letters.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [letters[i], letters[j]] = [letters[j], letters[i]];
-    }
 
     nonValidTiles.forEach((tile, i) => {
       tile.textContent = letters[i];
     });
 
+    updateShuffleText()
     updateBoard();
-
-    scrambleCount--;
-    document.getElementById('scramble-button').textContent = `Scramble (${scrambleCount})`;
-
-    if (scrambleCount === 0) {
-      document.getElementById('scramble-button').disabled = true;
-    }
   }
 }
 
@@ -263,8 +276,6 @@ document.getElementById('reset-button').addEventListener('click', () => {
   updateScoreDisplay();
 });
 
-document.getElementById('scramble-button').addEventListener('click', scrambleTiles);
-
-
+document.getElementById('shuffle-button').addEventListener('click', shuffleTiles);
 
 export { loadDictionary, loadPuzzles, resetBoard, updateBoard };

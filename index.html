@@ -3,8 +3,7 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <script type="module" src="index.js"></script>
-  <script type="module" src="move.js"></script>
+  <script type="module" src="main.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500&display=swap" rel="stylesheet">
@@ -208,7 +207,7 @@
     <div id="puzzle-id"></div>
     <div id="buttons-container">
         <button id="reset-button">Reset</button>
-        <button id="scramble-button">Scramble (10)</button>
+        <button id="shuffle-button">Shuffle</button>
     </div>
 
     <br>
@@ -230,8 +229,5 @@
     </div>
 
   </div>
-  <script type="module">
-    import { loadDictionary, loadPuzzles, resetBoard, updateBoard } from './index.js';
-  </script>
 </body>
 </html>
