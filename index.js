@@ -245,16 +245,17 @@ const resetBoard = () => {
   while (gameBoard.firstChild) gameBoard.firstChild.remove();
 
   // Generate new tiles
-    generateTiles();
+  generateTiles();
 
   const tiles = Array.from(document.querySelectorAll('.tile'));
 
-  buildBoard(tiles)
-  applyDragandTouchEvents(tiles)
+  buildBoard(tiles);  // Pass the tiles array to buildBoard
+  applyDragandTouchEvents(tiles);
   try { updateBoard() } catch {}
 }
 
-let scrambleCount = 10;
+
+let scrambleCount = 100;
 
 const scrambleTiles = () => {
   if (scrambleCount > 0) {
