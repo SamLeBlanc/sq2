@@ -3,22 +3,23 @@ import DataLoader from './data.js';
 
 class Board {
   constructor() {
-    // Load the counts from localStorage, or initialize them to 0 if they don't exist
-    this.undoLastMove = this.undoLastMove.bind(this);  // bind the method to the instance
+    this.undoLastMove = this.undoLastMove.bind(this);
 
     this.resetCount = Storage.resetCount;
     this.shuffleCount = Storage.shuffleCount;
+    this.lastMoveTimestamp = Storage.lastMoveTimestamp;
+
     this.puzzleWords;
 
     this.transitionSpeed = 500 //ms
-    this.shadowTileDelay = 500;
+    this.shadowTileDelay = 500; //ms
 
     this.shadowTile;
     this.touchStartTime;
     this.touchSourceId;
     this.touchTimeout;
 
-    this.moveHistory = []; // move history
+    this.moveHistory = [];
 
   }
 
@@ -92,52 +93,79 @@ class Board {
     let words = [];  // List to hold the found words
 
     // Function to add word to the list
-    function addWord(word, ids) {
-        if (word.length > 2) {  // We only care about words of length 2 or more
-            let valid = DataLoader.isDictionaryWord(word);
-            words.push({word, ids, valid});
-        }
+    function addWord(word, ids, orientation) {
+      if (word.length > 2) {  // We only care about words of length 2 or more
+        let valid = DataLoader.isDictionaryWord(word);
+        words.push({word, ids, valid, orientation});
+      }
     }
 
     // Find horizontal words
     for (let row = 0; row < gridSize; row++) {
-        let word = '';
-        let ids = [];
-        for (let col = 0; col < gridSize; col++) {
-            let index = row * gridSize + col;
-            let tile = tiles[index];
-            if (tile.textContent !== '') {
-                word += tile.textContent;
-                ids.push(tile.id);
-            } else if (word !== '') {
-                addWord(word, ids);
-                word = '';
-                ids = [];
-            }
+      let word = '';
+      let ids = [];
+      for (let col = 0; col < gridSize; col++) {
+        let index = row * gridSize + col;
+        let tile = tiles[index];
+        if (tile.textContent !== '') {
+          word += tile.textContent;
+          ids.push(tile.id);
+        } else if (word !== '') {
+          addWord(word, ids, 'across');
+          word = '';
+          ids = [];
         }
-        addWord(word, ids);  // Check for word at the end of the row
+      }
+      addWord(word, ids, 'across');  // Check for word at the end of the row
     }
 
     // Find vertical words
     for (let col = 0; col < gridSize; col++) {
-        let word = '';
-        let ids = [];
-        for (let row = 0; row < gridSize; row++) {
-            let index = row * gridSize + col;
-            let tile = tiles[index];
-            if (tile.textContent !== '') {
-                word += tile.textContent;
-                ids.push(tile.id);
-            } else if (word !== '') {
-                addWord(word, ids);
-                word = '';
-                ids = [];
-            }
+      let word = '';
+      let ids = [];
+      for (let row = 0; row < gridSize; row++) {
+        let index = row * gridSize + col;
+        let tile = tiles[index];
+        if (tile.textContent !== '') {
+          word += tile.textContent;
+          ids.push(tile.id);
+        } else if (word !== '') {
+          addWord(word, ids, 'down');
+          word = '';
+          ids = [];
         }
-        addWord(word, ids);  // Check for word at the end of the column
+      }
+      addWord(word, ids, 'down');  // Check for word at the end of the column
     }
-      return words;
+
+    return words;
   }
+
+  getWords({valid = null, orientation = null} = {}) {
+    const words = this.findWords();
+
+    return words
+      .filter(wordObj => {
+        let isValid = valid === null || wordObj.valid === valid;
+        let isCorrectOrientation = orientation === null || wordObj.orientation === orientation;
+
+        return isValid && isCorrectOrientation;
+      })
+      .map(wordObj => wordObj.word);  // Transform the array to only include the word itself
+  }
+
+  displayWords(){
+      const words = this.getWords({valid: true})
+      const wordBox = document.getElementById('word-box');
+      wordBox.textContent = ''  // Clear the word box
+      words.forEach(word => {
+          let newDiv = document.createElement('div');  // Create a new div
+          newDiv.textContent = word;  // Add the word to the div
+          wordBox.appendChild(newDiv);  // Add the div to the word box
+      })
+  }
+
+
 
   calculateScore() {
     let score = [0,0,0,0,0];
@@ -227,10 +255,20 @@ class Board {
       });
     }
 
+    let resetButtonText = this.resetCount > 0 ? `Reset (${this.resetCount})` : 'Reset'
+    document.getElementById('reset-button').textContent = resetButtonText;
+
+    let shuffleButtonText = this.shuffleCount > 0 ? `Shuffle (${this.shuffleCount})` : 'Shuffle'
+    document.getElementById('shuffle-button').textContent = shuffleButtonText;
 
     resetTileClasses(tiles);
     highlightValidWords(tiles, gameBoard);
+    this.displayWords()
     this.updateScoreDisplay();  // Update the score display after highlighting valid words
+
+    this.lastMoveTimestamp = Date.now()
+
+    Storage.storeLastMoveTimestamp(this.lastMoveTimestamp)
 
   }
 
@@ -245,10 +283,6 @@ class Board {
     while (gameBoard.firstChild) gameBoard.firstChild.remove();
 
     Storage.updateResetCount(this.resetCount)
-
-    let resetButtonText = this.resetCount > 0 ? `Reset (${this.resetCount})` : 'Reset'
-    document.getElementById('reset-button').textContent = resetButtonText;
-
 
     // Generate new tiles
     this.generateTiles();
