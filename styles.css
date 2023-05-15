@@ -13,6 +13,13 @@ body {
     background:black;
     color: white;
     padding-top: 5px;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #container {
@@ -27,41 +34,36 @@ body {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(7, 1fr);
-    gap: 5px;
-    width: 90vw;
-    height: 90vw;
-    max-width: 600px;
-    max-height: 600px;
-    border: 3px solid white;
+    gap: min(1vw, 5px);
+    max-width: 500px;
+    max-height: 500px;
     z-index:1;
     padding:5px;
     border-radius: 10px;
     background:transparent;
+    position: relative; /* Added to contain the tiles */
+    overflow: hidden; /* Added to hide overflowing content */
 }
+
 
 .tile {
     /* border: 1px solid #000; */
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: min(7.5vw, 80px);
+    width: min(10vw, 10vh, 60px);
+    height: min(10vw, 10vh, 60px);
+    font-size: min(7.5vw, 40px);
     font-weight:bold;
     transition: transform 0s ease;
     position: relative;
     z-index: 1;
     border-radius: 7px;
     color: black;
-
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 #score {
-  margin-top: -20px;
+  padding-top:10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -78,6 +80,7 @@ body {
 .score-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 100%;
   font-size: min(4vw, 30px);
 }
@@ -91,8 +94,10 @@ body {
   justify-content: center;
   align-items: center;
   color:black;
-  width: 6vw;
-  height: 6vw;
+  font-weight: bold;
+  font-size: min(5vw, 20px);
+  width: min(6vw, 6vh, 30px);
+  height: min(6vw, 6vh, 30px);
   max-height:40px;
   max-width:40px;
   margin:5px;
@@ -163,23 +168,33 @@ button {
   outline: none; /* This removes the default browser outline */
 }
 
-button:disabled {
-  background-color: transparent;
-  cursor: not-allowed;
+button {
+  border: solid 2px white;
+  color: white;
+  background-color: black; /* Changed from transparent */
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition-duration: 0.3s;
+  margin-right: 10px;
+  outline: none;
 }
 
-button:hover,
-button:focus {
-  background-color: yellow;
-}
-
-button:focus {
-  background-color: transparent; /* This removes the focus color */
+button:hover {
+  background-color: white;
+  color: black;
 }
 
 button:active {
-  background-color: yellow; /* This is optional, to show a color when the button is actively being clicked */
+  background-color: white;
+  color: black;
 }
+
 
 
 #buttons-container {

@@ -79,6 +79,10 @@ class Board {
         tile.classList.add('empty');
       }
     });
+
+    const gameBoard = document.getElementById('game-board');
+    gameBoard.style.border = '3px solid white';
+
   }
 
   findWords() {

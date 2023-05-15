@@ -21,9 +21,14 @@ document.getElementById('shuffle-button').addEventListener('click', () => {
 });
 
 document.getElementById('undo-button').addEventListener('click', () => {
+  const undoButton = document.getElementById('undo-button');
+  undoButton.disabled = true; // disable the button
   Board.undoLastMove();
   Board.updateBoard();
-});
 
+  setTimeout(() => {
+    undoButton.disabled = false; // re-enable the button after 500ms
+  }, 500);
+});
 
 window.Board = Board;  // Make Board interactable in the console
