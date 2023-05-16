@@ -1,3 +1,7 @@
+* {
+    touch-action: manipulation;
+}
+
 html, body {
     margin: 0;
     padding: 0;
@@ -12,7 +16,7 @@ body {
     overflow: hidden;
     background:black;
     color: white;
-    padding-top: 5px;
+    padding-top: 10px;
 
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -51,23 +55,31 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: min(10vw, 10vh, 60px);
-    height: min(10vw, 10vh, 60px);
+    width: min(12.25vw, 12.25vh, 60px);
+    height: min(12.25vw, 12.25vh, 60px);
     font-size: min(7.5vw, 40px);
     font-weight:bold;
     transition: transform 0s ease;
     position: relative;
     z-index: 1;
-    border-radius: 7px;
+    border-radius: 4px;
     color: black;
 }
 
 #score {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   width: 30%;
+  margin: 15px 0px 15px 0px;
+}
+
+.score-value{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: min(4vw, 16px);
 }
 
 #puzzle-id {
@@ -78,27 +90,47 @@ body {
 }
 
 .score-row {
-  display: flex;
   align-items: center;
   width: 100%;
+  margin-top: 5px;
   font-size: min(4vw, 30px);
 }
 
 #total-score{
-  font-size: min(7vw, 60px);
+  font-size: min(8vw, 70px);
+  height: min(10vw, 85px);
+  width: min(10vw, 85px);
+  margin: 0px 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+#total-score-box{
+  width: 60px;
+  height: 60px;
+  border: 3px solid white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;;
+  margin-left: 15px;
 }
 
 #score-word-box {
   padding-top:10px;
-  display: flex; /* This will make its children sit in the same line */
-  justify-content: space-between; /* This will put space between the children */
+  display: flex;
+  justify-content: space-between;
 }
 
 #word-box{
+  margin:10px;
   width: min(40vw, 40vh, 240px);
-  /* display: flex;
+  display: flex;
   flex-direction: column;
-  align-items: center; */
+  align-items: center;
   column-count: 2;
   column-gap: 20px;
   padding-left: 20px;
@@ -116,7 +148,7 @@ body {
   height: min(6vw, 6vh, 30px);
   max-height:40px;
   max-width:40px;
-  margin:5px;
+  margin:0px 5px;
   border-radius:3px;
 }
 
@@ -215,7 +247,7 @@ button:active {
 
 #buttons-container {
   display: flex;
-  justify-content: space-between; // Adjust this to align the buttons as needed
+  justify-content: space-between;
 }
 .shadow {
 z-index: 10;

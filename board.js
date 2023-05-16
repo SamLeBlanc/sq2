@@ -63,7 +63,7 @@ class Board {
     const randomKey = getRandomKey(DataLoader.puzzles);
     const puzzle = DataLoader.puzzles[randomKey];
 
-    document.getElementById('puzzle-id').textContent = '#' + randomKey;
+    // document.getElementById('puzzle-id').textContent = '#' + randomKey;
 
     this.puzzleWords = createPuzzleWords(puzzle);
 
@@ -190,10 +190,10 @@ class Board {
 
   updateScoreDisplay() {
     const score = this.calculateScore();
-    document.getElementById('score-value-1').textContent = 'x ' + score[0];
-    document.getElementById('score-value-2').textContent = 'x ' + score[1];
-    document.getElementById('score-value-3').textContent = 'x ' + score[2];
-    document.getElementById('score-value-4').textContent = 'x ' + score[3];
+    document.getElementById('score-value-1').textContent =  score[0];
+    document.getElementById('score-value-2').textContent =  score[1];
+    document.getElementById('score-value-3').textContent =  score[2];
+    document.getElementById('score-value-4').textContent =  score[3];
     document.getElementById('total-score').textContent = score[4];
   }
 

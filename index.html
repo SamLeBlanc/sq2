@@ -12,35 +12,34 @@
 <body>
   <div id="container">
     <div id="game-board"></div>
-    <div id="puzzle-id"></div>
-    <div id="score-word-box"> <!-- New wrapper div -->
-      <div id="score">
-        <div class='score-row'>
-          <div class='score-key single'>1</div>
-          <span id='score-value-1'>x 0</span>
-        </div>
-        <div class='score-row'>
-          <div class='score-key double'>2</div>
-          <span id='score-value-2'>x 0</span>
-        </div>
-        <div class='score-row'>
-          <div class='score-key triple'>3</div>
-          <span id='score-value-3'>x 0</span>
-        </div>
-        <div class='score-row'>
-          <div class='score-key quadruple'>4</div>
-          <span id='score-value-4'>x 0</span>
-        </div>
-        <div class='score-line'></div>
-        <div id='total-score'>0</div>
+    <!-- <div id="puzzle-id"></div> -->
+    <div id="score">
+      <div class='score-row'>
+        <div class='score-key single'>1</div>
+        <span class='score-value' id='score-value-1'>0</span>
       </div>
-      <div id='word-box'>
+      <div class='score-row'>
+        <div class='score-key double'>2</div>
+        <span class='score-value' id='score-value-2'>0</span>
+      </div>
+      <div class='score-row'>
+        <div class='score-key triple'>3</div>
+        <span class='score-value' id='score-value-3'>0</span>
+      </div>
+      <div class='score-row'>
+        <div class='score-key quadruple'>4</div>
+        <span class='score-value' id='score-value-4'>0</span>
+      </div>
+      <div id='total-score-box'>
+        <div id='total-score'>0</div>
       </div>
     </div>
     <div id="buttons-container">
         <button id="reset-button">Reset</button>
         <button id="shuffle-button">Shuffle</button>
         <button id="undo-button">Undo</button>
+    </div>
+    <div id='word-box'>
     </div>
 
 
