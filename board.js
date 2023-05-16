@@ -63,6 +63,8 @@ class Board {
     const randomKey = getRandomKey(DataLoader.puzzles);
     const puzzle = DataLoader.puzzles[randomKey];
 
+    console.log(puzzle)
+
     // document.getElementById('puzzle-id').textContent = '#' + randomKey;
 
     this.puzzleWords = createPuzzleWords(puzzle);
@@ -154,17 +156,6 @@ class Board {
       .map(wordObj => wordObj.word);  // Transform the array to only include the word itself
   }
 
-  displayWords() {
-    // const words = this.getWords({valid: true});
-    // const wordBox = document.getElementById('word-box');
-    // wordBox.textContent = '';
-    // words.forEach(word => {
-    //   let wordDiv = document.createElement('div');
-    //   wordDiv.textContent = word;
-    //   wordBox.appendChild(wordDiv);
-    // });
-  }
-
   calculateScore() {
     let score = [0,0,0,0,0];
     const tiles = Array.from(document.querySelectorAll('.tile'));
@@ -231,7 +222,7 @@ class Board {
       Object.entries(tileCounts).forEach(([id, count]) => {
         let tile = document.getElementById(id);
         // reset all classes to default
-        tile.classList.remove('filled', 'single', 'double', 'triple', 'quadruple','correct');
+        tile.classList.remove('filled', 'single', 'double', 'triple', 'quadruple');
 
         // get tile position
         const rect = tile.getBoundingClientRect();
@@ -261,7 +252,7 @@ class Board {
 
     resetTileClasses(tiles);
     highlightValidWords(tiles, gameBoard);
-    this.displayWords()
+    // this.displayWords()
     this.updateScoreDisplay();  // Update the score display after highlighting valid words
 
     this.lastMoveTimestamp = Date.now()

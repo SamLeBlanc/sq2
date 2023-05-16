@@ -1,11 +1,52 @@
+// import DataLoader from './data.js';
+// import Board from './board.js';
+
 class Storage {
   constructor() {
     this.puzzleNumber = localStorage.getItem('puzzleNumber') || '1';
     this.lastMoveTimestamp = parseInt(localStorage.getItem('lastMoveTimestamp')) || Date.now();
     this.resetCount = this.getResetCount();
     this.shuffleCount = this.getShuffleCount();
+    this.customWordInclude = this.getCustomWordInclude();
+    this.customWordExclude = this.getCustomWordExclude();
+
   }
 
+
+  // Custom Word List
+  getCustomWordInclude(){
+    let storedList = localStorage.getItem('customWordInclude') || [];
+    try{
+      return storedList.split(",")
+    } catch {}
+    return storedList
+  }
+
+  getCustomWordExclude(){
+    let storedList = localStorage.getItem('customWordExclude') || [];
+    try{
+      return storedList.split(",")
+    } catch {}
+    return storedList
+  }
+
+  async addCustomWordInclude(word){
+    this.customWordInclude.push(word)
+    this.customWordInclude = Array.from(new Set(this.customWordInclude));
+    await DataLoader.loadData();
+    Board.updateBoard()
+    localStorage.setItem('customWordInclude', this.customWordInclude);
+  }
+
+  async addCustomWordExclude(word){
+    this.customWordExclude.push(word)
+    this.customWordExclude = Array.from(new Set(this.customWordExclude));
+    await DataLoader.loadData();
+    Board.updateBoard()
+    localStorage.setItem('customWordExclude', this.customWordExclude);
+  }
+
+  // Last Move
   storeLastMoveTimestamp(timestamp){
     localStorage.setItem('lastMoveTimestamp', timestamp.toString());
     this.lastMoveTimestamp = timestamp;

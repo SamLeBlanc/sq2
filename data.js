@@ -13,9 +13,22 @@ class DataLoader {
         const words = Object.keys(jsonData);
         const shortWords = words.filter(word => word.length <= 7);
         this.dictionary = new Set(shortWords);
+
+        console.log(Storage)
+
+        // Add words
+        for (let word of Storage.customWordInclude) {
+          this.dictionary.add(word);
+        }
+
+        // Remove words
+        for (let word of Storage.customWordExclude) {
+          this.dictionary.delete(word);
+        }
       })
       .catch(error => console.error(error));
   }
+
 
   async loadPuzzles() {
     return fetch('data//puzzles.json') // Return the Promise from fetch

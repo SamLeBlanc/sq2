@@ -201,7 +201,7 @@ body {
 }
 
 .correct {
-  border: green solid 2px;
+  color: green;
 }
 
 .title{

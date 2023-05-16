@@ -32,6 +32,16 @@ class Layout {
     let extraHeightRemoved = 50
     // this.wordBox.style.maxHeight = wordBoxHeight - extraHeightRemoved + 'px';
   }
+
+  displayWords() {
+    const words = Board.getWords({valid: true});
+    const wordBox = document.getElementById('word-box');
+    // wordBox.textContent = '';
+    words.forEach(word => {
+      console.log(word)
+    });
+  }
+
 }
 
 export default new Layout();

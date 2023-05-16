@@ -11,9 +11,14 @@ document.addEventListener('DOMContentLoaded', async event => {
   Layout.updateWordBoxHeight()
 
   // MAke objects interactable in the console
+  window.DataLoader = DataLoader;
   window.Storage = Storage;
   window.Board = Board;
   window.Layout = Layout;
+
+  document.ondblclick = function(e) {
+    e.preventDefault();
+  }
 
 });
 
@@ -37,4 +42,8 @@ document.getElementById('undo-button').addEventListener('click', () => {
   setTimeout(() => {
     undoButton.disabled = false; // re-enable the button after 500ms
   }, 500);
+});
+
+document.getElementById('words-button').addEventListener('click', () => {
+  Layout.displayWords();
 });
