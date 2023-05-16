@@ -72,7 +72,7 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin: 30px 0px;
+  margin: 20px 0px 10px 0px;
   flex-grow: 1;
   display: flex;
   align-items: center;
@@ -135,16 +135,14 @@ body {
 #word-box {
     top: 450px;
     margin-top: 20px;
-    width: 250px;
     height: 100px;
-    display: flex; /* Set to flex */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    position: fixed;
+    width: min(95vw, 500px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     z-index: 4;
-    background-color: black;
     transition: 0.5s;
-    opacity: 0;
     color: white;
 }
 
@@ -152,6 +150,11 @@ body {
     text-align: center; /* Center text horizontally */
     word-wrap: break-word;
     white-space: pre-wrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: 0.5s;
 }
 
 
@@ -162,10 +165,10 @@ body {
   justify-content: center;
   align-items: center;
   color:black;
-  font-weight: bold;
-  font-size: min(6.5vw, 26px);
+  font-size: min(6vw, 23px);
   width: min(8vw, 8vh, 40px);
   height: min(8vw, 8vh, 40px);
+  font-weight: bold;
   max-height:40px;
   max-width:40px;
   margin:0px 5px;
@@ -224,12 +227,16 @@ body {
 
 #title{
   font-size: 32px;
-  padding-top: 10px;
   z-index: 10;
-  width: 80%;
+  width: 70%;
   transition: 0.5s;
-  margin: 10px;
+  transform: translateY(0px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
+
 
 #title-image{
   width: 100%;
@@ -272,7 +279,7 @@ button:active {
   display: flex;
   justify-content: space-around; /* Space the buttons evenly */
   flex-wrap: nowrap; /* Prevent the buttons from wrapping */
-  width: 100%;
+  width: min(100%, 500px);
   position: fixed;
   bottom: 0;
   padding-bottom:10px;

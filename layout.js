@@ -64,35 +64,51 @@ class Layout {
 
   updateWordBoxHeight() {
     let wordBoxHeight = this.calculateWordBoxHeight();
-    let extraHeightRemoved = 50
-    // this.wordBox.style.height = wordBoxHeight - extraHeightRemoved + 'px';
+    // this.wordBox.style.height = wordBoxHeight + 'px';
   }
 
   updateWordBoxDisplay(){
     let wordBox = document.getElementById('word-box');
+    let wordBoxInner = document.getElementById('word-box-inner');
+
     let title = document.getElementById('title');
+    let titleImage = document.getElementById('title-image'); // assuming the title is an image
     let button = document.getElementById('words-button');
 
+    let oldHeight = wordBoxInner.getBoundingClientRect().height;
+
     if (this.wordBoxState === 'showingTitle') {
-      wordBox.style.opacity = 1;
-      title.style.paddingTop = '80px'
-      let width = title.getBoundingClientRect().width;
-      title.style.width = (width / 2) + 'px'; // Set the width to half of the current width
-      button.style.textDecoration = 'none'; // Add strikethrough
+      let titleRect = title.getBoundingClientRect();
+      let width = titleRect.width;
+      let newWidth = width / 1.5;
+      let translateY = 50; // calculate the difference in height
+      title.style.transform = `translateY(${translateY}px)`;
+      title.style.width = newWidth + 'px';
+      button.style.textDecoration = 'none';
       this.wordBoxState = 'showingWords';
       this.displayWords(true);
+
+      let newHeight = wordBoxInner.getBoundingClientRect().height;
+      let translateY1 = (newHeight - oldHeight) / 2;
+      title.style.transform = `translateY(${translateY1}px)`;
+
     } else if (this.wordBoxState === 'showingWords') {
-      button.style.textDecoration = 'line-through'; // Add strikethrough
+      button.style.textDecoration = 'line-through';
       this.wordBoxState = 'showingNonWords';
       this.displayWords(false);
+
+      // let newHeight = wordBoxInner.getBoundingClientRect().height;
+      // let translateY2 = (newHeight - oldHeight) / 2;
+      // title.style.transform = `translateY(${translateY2}px)`;
+
     } else {
-      wordBox.style.opacity = 0;
-      title.style.paddingTop = '0px'
       let width = title.getBoundingClientRect().width;
-      title.style.width = (width * 2) + 'px'; // Set the width to the original width
-      button.style.textDecoration = 'none'; // Remove strikethrough
+      title.style.width = (width * 1.5) + 'px';
+      button.style.textDecoration = 'none';
+      document.getElementById('word-box-inner').innerHTML = '';
       this.wordBoxState = 'showingTitle';
-  }
+      title.style.transform = `translateY(${0}px)`;
+    }
 }
 
   displayWords(valid) {
