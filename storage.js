@@ -46,12 +46,13 @@ class Storage {
     localStorage.setItem('customWordExclude', this.customWordExclude);
   }
 
-  // Last Move
+  // Last Move Time
   storeLastMoveTimestamp(timestamp){
     localStorage.setItem('lastMoveTimestamp', timestamp.toString());
     this.lastMoveTimestamp = timestamp;
   }
 
+  // Button Counts
   updateResetCount(count) {
     localStorage.setItem('resetCount', count.toString());
     this.resetCount = count;

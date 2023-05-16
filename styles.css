@@ -132,15 +132,29 @@ body {
   justify-content: space-between;
 }
 
-#word-box{
-  margin-top:20px;
-  width: min(70vw, 70vh, 400px);
-  column-count: 3;
-  column-gap: 10px;
-  column-width: 40px;
-  margin-left: 20px;
-  overflow-y: auto;
+#word-box {
+    top: 450px;
+    margin-top: 20px;
+    width: 250px;
+    height: 100px;
+    display: flex; /* Set to flex */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    position: fixed;
+    z-index: 4;
+    background-color: black;
+    transition: 0.5s;
+    opacity: 0;
+    color: white;
 }
+
+#word-box-inner {
+    text-align: center; /* Center text horizontally */
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+
 
 
 .score-key{
@@ -185,53 +199,47 @@ body {
 }
 
 .single {
-  background-color: yellow;
+  background-color: #47B6FF;
 }
 
 .double {
-  background-color: orange;
+  background-color: #527fe0;
 }
 
 .triple {
-  background-color: red;
+  background-color: #7f4ebc;
 }
 
 .quadruple {
-  background-color: purple;
+  background-color: #c841a6;
+}
+
+.quintuple {
+  background-color: #ff1f87;
 }
 
 .correct {
-  color: green;
+  /* color: green; */
 }
 
-.title{
+#title{
   font-size: 32px;
   padding-top: 10px;
+  z-index: 10;
+  width: 80%;
+  transition: 0.5s;
+  margin: 10px;
 }
 
-
-button {
-  border: solid 2px white; /* Green */
-  color: white;
-  background: transparent;
-  padding: 5px 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition-duration: 0.4s;
-  margin-right: 10px;
-  outline: none; /* This removes the default browser outline */
+#title-image{
+  width: 100%;
 }
 
 button {
   border: solid 0.5px white;
   color: white;
   background-color: black; /* Changed from transparent */
-  padding: 5px 10px;
+  padding: 5px 5px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -240,8 +248,10 @@ button {
   cursor: pointer;
   border-radius: 8px;
   transition-duration: 0.3s;
-  margin-right: 10px;
   outline: none;
+  white-space: nowrap; /* Prevent the text from wrapping */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis (...) when the text overflows */
 }
 
 button:hover {
@@ -254,10 +264,14 @@ button:active {
   color: black;
 }
 
+.button-count{
+  font-size: 0.75em;
+}
 
 #buttons-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-around; /* Space the buttons evenly */
+  flex-wrap: nowrap; /* Prevent the buttons from wrapping */
   width: 100%;
   position: fixed;
   bottom: 0;

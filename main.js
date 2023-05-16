@@ -1,24 +1,23 @@
 import Storage from './storage.js';
 import DataLoader from './data.js';
-import Board from './board.js';
 import Layout from './layout.js';
-
+import Board from './board.js';
 
 document.addEventListener('DOMContentLoaded', async event => {
   await DataLoader.loadData();
+  Layout.resizeButtons();
   Board.resetBoard();
   Board.updateBoard();
   Layout.updateWordBoxHeight()
 
-  // MAke objects interactable in the console
+  // Allow objects to be interactable in the console
   window.DataLoader = DataLoader;
   window.Storage = Storage;
   window.Board = Board;
   window.Layout = Layout;
 
-  document.ondblclick = function(e) {
-    e.preventDefault();
-  }
+  // Prevent double click to zoom on mobile
+  document.ondblclick = e => e.preventDefault();
 
 });
 
@@ -45,5 +44,5 @@ document.getElementById('undo-button').addEventListener('click', () => {
 });
 
 document.getElementById('words-button').addEventListener('click', () => {
-  Layout.displayWords();
+  Layout.updateWordBoxDisplay()
 });

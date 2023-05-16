@@ -1,5 +1,7 @@
 import Storage from './storage.js';
 import DataLoader from './data.js';
+import Layout from './layout.js';
+
 
 class Board {
   constructor() {
@@ -156,43 +158,13 @@ class Board {
       .map(wordObj => wordObj.word);  // Transform the array to only include the word itself
   }
 
-  calculateScore() {
-    let score = [0,0,0,0,0];
-    const tiles = Array.from(document.querySelectorAll('.tile'));
-      tiles.forEach(tile => {
-      if (tile.classList.contains('single')) {
-        score[0] += 1;
-      }
-      if (tile.classList.contains('double')) {
-        score[1] += 1;
-      }
-      if (tile.classList.contains('triple')) {
-        score[2] += 1;
-      }
-      if (tile.classList.contains('quadruple')) {
-        score[3] += 1;
-      }
-      score[4] = score[0] + 2*score[1] + 3*score[2] + 4*score[3]
-    });
-    return score;
-  }
-
-  updateScoreDisplay() {
-    const score = this.calculateScore();
-    document.getElementById('score-value-1').textContent =  score[0];
-    document.getElementById('score-value-2').textContent =  score[1];
-    document.getElementById('score-value-3').textContent =  score[2];
-    document.getElementById('score-value-4').textContent =  score[3];
-    document.getElementById('total-score').textContent = score[4];
-  }
-
   updateBoard() {
     const tiles = Array.from(document.querySelectorAll('.tile'));
     const gameBoard = document.getElementById('game-board');
 
     const resetTileClasses = tiles => {
       tiles.forEach(tile => {
-        tile.classList.remove('single', 'double','triple','quadruple', 'correct');
+        tile.classList.remove('single', 'double','triple','quadruple', 'quintuple','correct');
         if (tile.textContent.trim() !== "") {
           tile.classList.add('filled');
         }
@@ -222,7 +194,7 @@ class Board {
       Object.entries(tileCounts).forEach(([id, count]) => {
         let tile = document.getElementById(id);
         // reset all classes to default
-        tile.classList.remove('filled', 'single', 'double', 'triple', 'quadruple');
+        tile.classList.remove('filled', 'single', 'double', 'triple', 'quadruple','quintuple');
 
         // get tile position
         const rect = tile.getBoundingClientRect();
@@ -231,29 +203,36 @@ class Board {
         const col = Math.floor((rect.left - boardRect.left) / rect.width);
 
         // check if tile is inner tile
-        const isInnerTile = (row >= 1 && row <= 5 && col >= 1 && col <= 5);
+        const outerRing = (row == 0 || row == 6 || col == 0 || col == 6);
+        const secondRing = (row == 1 || row == 5 || col == 1 || col == 5);
+        const thirdRing = (row == 2 || row == 4 || col == 2 || col == 4);
+        const center = (row == 3 && col == 3);
 
         // assign classes based on count and whether it's an inner tile
-        if (count === 1) {
-          tile.classList.add(isInnerTile ? 'triple' : 'single');
-        } else if (count >= 2) {
-          tile.classList.add(isInnerTile ? 'quadruple' : 'double');
-        } else {
-          tile.classList.add('filled');
+        if (count == 1 && outerRing) {
+          tile.classList.add('single');
+        } else if ((count == 2 && outerRing) || (count == 1 && secondRing)) {
+          tile.classList.add('double');
+        } else if ((count == 2 && secondRing) || (count == 1 && thirdRing)) {
+          tile.classList.add('triple');
+        } else if ((count == 2 && thirdRing) || (count == 1 && center)) {
+          tile.classList.add('quadruple');
+        } else if (count == 2 && center) {
+          tile.classList.add('quintuple');
         }
       });
     }
 
-    let resetButtonText = this.resetCount > 0 ? `Reset (${this.resetCount})` : 'Reset'
-    document.getElementById('reset-button').textContent = resetButtonText;
+    let resetButtonText = this.resetCount > 0 ? `(${this.resetCount})` : ''
+    document.getElementById('reset-count').textContent = resetButtonText;
 
-    let shuffleButtonText = this.shuffleCount > 0 ? `Shuffle (${this.shuffleCount})` : 'Shuffle'
-    document.getElementById('shuffle-button').textContent = shuffleButtonText;
+    let shuffleButtonText = this.shuffleCount > 0 ? `(${this.shuffleCount})` : ''
+    document.getElementById('shuffle-count').textContent = shuffleButtonText;
 
     resetTileClasses(tiles);
     highlightValidWords(tiles, gameBoard);
     // this.displayWords()
-    this.updateScoreDisplay();  // Update the score display after highlighting valid words
+    Layout.updateScoreDisplay();  // Update the score display after highlighting valid words
 
     this.lastMoveTimestamp = Date.now()
 
@@ -296,8 +275,8 @@ class Board {
 
     const letters = nonValidTiles.map(tile => tile.textContent);
 
-    let shuffleButtonText = this.shuffleCount > 0 ? `Shuffle (${this.shuffleCount})` : 'Shuffle'
-    document.getElementById('shuffle-button').textContent = shuffleButtonText;
+    let shuffleButtonText = this.shuffleCount > 0 ? `(${this.shuffleCount})` : ''
+    document.getElementById('shuffle-count').textContent = shuffleButtonText;
 
     for (let i = letters.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -493,7 +472,6 @@ class Board {
       clearTimeout(this.touchTimeout);
 
       const touchDuration = Date.now() - this.touchStartTime;
-      console.log(touchDuration)
 
       const finalizeDrop = (sourceId, target) => {
         if (sourceId && target && target.classList.contains('tile')) {
