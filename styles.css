@@ -228,7 +228,7 @@ button {
 }
 
 button {
-  border: solid 2px white;
+  border: solid 0.5px white;
   color: white;
   background-color: black; /* Changed from transparent */
   padding: 5px 10px;
