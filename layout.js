@@ -29,8 +29,8 @@ class Layout {
   // Method to update the word-box height
   updateWordBoxHeight() {
     let wordBoxHeight = this.calculateWordBoxHeight();
-    let extraHeightRemoved = 100
-    this.wordBox.style.maxHeight = wordBoxHeight - extraHeightRemoved + 'px';
+    let extraHeightRemoved = 50
+    // this.wordBox.style.maxHeight = wordBoxHeight - extraHeightRemoved + 'px';
   }
 }
 

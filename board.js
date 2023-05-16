@@ -155,14 +155,14 @@ class Board {
   }
 
   displayWords() {
-    const words = this.getWords({valid: true});
-    const wordBox = document.getElementById('word-box');
-    wordBox.textContent = '';
-    words.forEach(word => {
-      let wordDiv = document.createElement('div');
-      wordDiv.textContent = word;
-      wordBox.appendChild(wordDiv);
-    });
+    // const words = this.getWords({valid: true});
+    // const wordBox = document.getElementById('word-box');
+    // wordBox.textContent = '';
+    // words.forEach(word => {
+    //   let wordDiv = document.createElement('div');
+    //   wordDiv.textContent = word;
+    //   wordBox.appendChild(wordDiv);
+    // });
   }
 
   calculateScore() {
@@ -410,38 +410,6 @@ class Board {
 
     const handleDragMove = event => event.preventDefault();
 
-    // const animateElementStyle = (element, transform, transitionSpeed) => {
-    //   if (element.textContent != '') {
-    //     element.style.transform = transform;
-    //     element.style.transition = `transform ${transitionSpeed}ms ease`;
-    //     element.style.zIndex = '2';
-    //   }
-    // }
-    //
-    // const resetElementStyle = element => {
-    //   const tiles = Array.from(document.querySelectorAll('.tile'));
-    //   tiles.forEach(tile => {
-    //     tile.style.transform = '';
-    //     tile.style.transition = 'transform 0s';
-    //     tile.style.zIndex = '1';
-    //   })
-    // }
-    //
-    // const swapElements = (sourceElement, targetElement) => {
-    //   console.log('swap')
-    //   const sourceNextSibling = sourceElement.nextSibling;
-    //   const targetNextSibling = targetElement.nextSibling;
-    //   const parent = sourceElement.parentNode;
-    //
-    //   if (sourceNextSibling === targetElement) {
-    //     parent.insertBefore(targetElement, sourceElement);
-    //   } else if (targetNextSibling === sourceElement) {
-    //     parent.insertBefore(sourceElement, targetElement);
-    //   } else {
-    //     parent.insertBefore(sourceElement, targetNextSibling);
-    //     parent.insertBefore(targetElement, sourceNextSibling);
-    //   }
-    // }
 
     const handleDrop = event => {
       event.preventDefault();
@@ -552,6 +520,9 @@ class Board {
         this.touchStartTime = null;
         this.touchTimeout = null;
       };
+
+      const tiles = Array.from(document.querySelectorAll('.tile'));
+      tiles.forEach(tile => tile.style.opacity = '1')
 
       const getTouchTarget = () => {
         if (this.shadowTile == null) {
