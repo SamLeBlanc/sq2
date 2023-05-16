@@ -154,18 +154,16 @@ class Board {
       .map(wordObj => wordObj.word);  // Transform the array to only include the word itself
   }
 
-  displayWords(){
-      const words = this.getWords({valid: true})
-      const wordBox = document.getElementById('word-box');
-      wordBox.textContent = ''  // Clear the word box
-      words.forEach(word => {
-          let newDiv = document.createElement('div');  // Create a new div
-          newDiv.textContent = word;  // Add the word to the div
-          wordBox.appendChild(newDiv);  // Add the div to the word box
-      })
+  displayWords() {
+    const words = this.getWords({valid: true});
+    const wordBox = document.getElementById('word-box');
+    wordBox.textContent = '';
+    words.forEach(word => {
+      let wordDiv = document.createElement('div');
+      wordDiv.textContent = word;
+      wordBox.appendChild(wordDiv);
+    });
   }
-
-
 
   calculateScore() {
     let score = [0,0,0,0,0];
@@ -395,7 +393,6 @@ class Board {
       }, this.transitionSpeed + 100);
     }
   }
-
 
   applyDragandTouchEvents() {
 

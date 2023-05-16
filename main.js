@@ -1,12 +1,20 @@
 import Storage from './storage.js';
 import DataLoader from './data.js';
 import Board from './board.js';
+import Layout from './layout.js';
+
 
 document.addEventListener('DOMContentLoaded', async event => {
   await DataLoader.loadData();
   Board.resetBoard();
   Board.updateBoard();
-  window.Board = Board;  // Make Board interactable in the console
+  Layout.updateWordBoxHeight()
+
+  // MAke objects interactable in the console
+  window.Storage = Storage;
+  window.Board = Board;
+  window.Layout = Layout;
+
 });
 
 document.getElementById('reset-button').addEventListener('click', () => {
@@ -30,5 +38,3 @@ document.getElementById('undo-button').addEventListener('click', () => {
     undoButton.disabled = false; // re-enable the button after 500ms
   }, 500);
 });
-
-window.Board = Board;  // Make Board interactable in the console
