@@ -86,8 +86,6 @@ class Board {
     });
 
     const gameBoard = document.getElementById('game-board');
-    gameBoard.style.border = '3px solid white';
-
   }
 
   findWords() {
@@ -259,6 +257,7 @@ class Board {
 
     // Generate new tiles
     this.generateTiles();
+    this.moveHistory = [];
 
     const tiles = Array.from(document.querySelectorAll('.tile'));
 

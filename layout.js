@@ -1,3 +1,5 @@
+import Popup from './popup.js';
+
 class Layout {
   constructor() {
     this.gameboard = document.getElementById('game-board');
@@ -6,6 +8,7 @@ class Layout {
     this.wordBox = document.getElementById('word-box');
     this.wordBoxState = 'showingTitle';
     this.words;
+    this.popup = new Popup();
   }
 
   // Score
@@ -120,124 +123,111 @@ class Layout {
         // Add word to the current group
         wordGroup.appendChild(clickableWord);
 
-        // If this word is the 4th in its group or the last in the array, append the group to the box
-        if ((index + 1) % 4 === 0 || index === words.length - 1) {
+        // If this word is the 5th in its group or the last in the array, append the group to the box
+        if ((index + 1) % 3 === 0 || index === words.length - 1) {
           wordBox.appendChild(wordGroup);
           wordGroup = document.createElement('div');  // Start a new group
         }
       });
     }
 
+    console.log(this.Popup)
+
     // Add event listener for clickable words
     const clickableWords = document.querySelectorAll('.clickable-word');
     clickableWords.forEach(wordElement => {
-      wordElement.addEventListener('click', (event) => this.wordClicked(event));
+      wordElement.addEventListener('click', (event) => this.popup.wordClicked(event));
     });
   }
 
-  async wordClicked(event) {
-    console.log(event)
-    const clickedWord = event.target.textContent.toLowerCase();
+  // async wordClicked(event) {
+  //   console.log(event)
+  //   const clickedWord = event.target.textContent.toLowerCase();
+  //
+  //   // Get the word definition, assuming you have a function getWordDefinition for this
+  //   const wordDefinitionText = await this.getWordDefinition(clickedWord);
+  //
+  //   // Create the modal
+  //   const modal = document.createElement('div');
+  //   modal.className = 'modal';
+  //
+  //   // Create the modal content container
+  //   const modalContent = document.createElement('div');
+  //   modalContent.className = 'modal-content';
+  //
+  //   const closeModal = () => {
+  //     if (modal) {
+  //       modal.remove();
+  //     }
+  //   }
+  //
+  //   // Create close button
+  //   const closeModalButton = document.createElement('span');
+  //   closeModalButton.className = 'close-modal';
+  //   closeModalButton.innerHTML = '&times;';
+  //   closeModalButton.addEventListener('click', () => closeModal());
+  //
+  //   // Add the close button to the modal content
+  //   modalContent.appendChild(closeModalButton);
+  //
+  //   // Add the word title
+  //   const wordTitle = document.createElement('h2');
+  //   wordTitle.textContent = clickedWord.toUpperCase();
+  //   modalContent.appendChild(wordTitle);
+  //
+  //   // Add the word definition
+  //   const wordDefinition = document.createElement('p');
+  //   wordDefinition.textContent = `${wordDefinitionText}`; // Replace '...' with the actual definition
+  //   modalContent.appendChild(wordDefinition);
+  //
+  //   // Create the challenge button
+  //   const challengeButton = document.createElement('button');
+  //   challengeButton.textContent = 'Challenge';
+  //   challengeButton.addEventListener('click', () => {
+  //     // Challenge word action here
+  //     console.log(`Challenged the word: ${clickedWord}`);
+  //     closeModal();
+  //   });
+  //
+  //   let wordBoxState;
+  //   if (document.getElementById('words-button').style.textDecoration == 'none'){
+  //     wordBoxState = 'showingWords'
+  //   } else {
+  //     wordBoxState = 'showingNonWords'
+  //   };
+  //
+  //   // Create the add/exclude from dictionary button
+  //   const dictionaryButton = document.createElement('button');
+  //   if (wordBoxState === 'showingNonWords') {
+  //     dictionaryButton.textContent = 'Add to dictionary';
+  //     dictionaryButton.addEventListener('click', () => {
+  //       Storage.addCustomWordInclude(clickedWord)
+  //       console.log(`Added the word: ${clickedWord} to the dictionary`);
+  //       closeModal();
+  //     });
+  //   } else {
+  //     dictionaryButton.textContent = 'Exclude from dictionary';
+  //     dictionaryButton.addEventListener('click', () => {
+  //       Storage.addCustomWordExclude(clickedWord)
+  //       console.log(`Excluded the word: ${clickedWord} from the dictionary`);
+  //       closeModal();
+  //     });
+  //   }
+  //
+  //   // Add buttons to the modal content
+  //   modalContent.appendChild(challengeButton);
+  //   modalContent.appendChild(dictionaryButton);
+  //
+  //   // Add modal content to the modal
+  //   modal.appendChild(modalContent);
+  //
+  //   // Add modal to the body
+  //   document.body.appendChild(modal);
+  //
+  //   // Display the modal
+  //   modal.style.display = 'block';
+  // }
 
-    // Get the word definition, assuming you have a function getWordDefinition for this
-    const wordDefinitionText = await this.getWordDefinition(clickedWord);
-
-    // Create the modal
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-
-    // Create the modal content container
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content';
-
-    const closeModal = () => {
-      if (modal) {
-        modal.remove();
-      }
-    }
-
-    // Create close button
-    const closeModalButton = document.createElement('span');
-    closeModalButton.className = 'close-modal';
-    closeModalButton.innerHTML = '&times;';
-    closeModalButton.addEventListener('click', () => closeModal());
-
-    // Add the close button to the modal content
-    modalContent.appendChild(closeModalButton);
-
-    // Add the word title
-    const wordTitle = document.createElement('h2');
-    wordTitle.textContent = clickedWord.toUpperCase();
-    modalContent.appendChild(wordTitle);
-
-    // Add the word definition
-    const wordDefinition = document.createElement('p');
-    wordDefinition.textContent = `${wordDefinitionText}`; // Replace '...' with the actual definition
-    modalContent.appendChild(wordDefinition);
-
-    // Create the challenge button
-    const challengeButton = document.createElement('button');
-    challengeButton.textContent = 'Challenge';
-    challengeButton.addEventListener('click', () => {
-      // Challenge word action here
-      console.log(`Challenged the word: ${clickedWord}`);
-      closeModal();
-    });
-
-    let wordBoxState;
-    if (document.getElementById('words-button').style.textDecoration == 'none'){
-      wordBoxState = 'showingWords'
-    } else {
-      wordBoxState = 'showingNonWords'
-    };
-
-    // Create the add/exclude from dictionary button
-    const dictionaryButton = document.createElement('button');
-    if (wordBoxState === 'showingNonWords') {
-      dictionaryButton.textContent = 'Add to dictionary';
-      dictionaryButton.addEventListener('click', () => {
-        Storage.addCustomWordInclude(clickedWord)
-        console.log(`Added the word: ${clickedWord} to the dictionary`);
-        closeModal();
-      });
-    } else {
-      dictionaryButton.textContent = 'Exclude from dictionary';
-      dictionaryButton.addEventListener('click', () => {
-        Storage.addCustomWordExclude(clickedWord)
-        console.log(`Excluded the word: ${clickedWord} from the dictionary`);
-        closeModal();
-      });
-    }
-
-    // Add buttons to the modal content
-    modalContent.appendChild(challengeButton);
-    modalContent.appendChild(dictionaryButton);
-
-    // Add modal content to the modal
-    modal.appendChild(modalContent);
-
-    // Add modal to the body
-    document.body.appendChild(modal);
-
-    // Display the modal
-    modal.style.display = 'block';
-  }
-
-  async getWordDefinition(word) {
-    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-
-    if (!response.ok) {
-      console.log(`HTTP error! status: ${response.status}`);
-      return 'No definition found';
-    } else {
-      const data = await response.json();
-      if (data[0] && data[0].meanings[0] && data[0].meanings[0].definitions[0]) {
-        return data[0].meanings[0].definitions[0].definition;
-      } else {
-        return 'No definition found';
-      }
-    }
-  }
 
 
   // Buttons

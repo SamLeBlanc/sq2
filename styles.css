@@ -27,14 +27,44 @@ body {
 }
 
 
+#openingScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: min(10vw,10vh,40px);
+  text-align: center;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 1s ease-out;
+}
+
+#openingScreen.hide {
+  opacity: 0;
+}
+
+
+
 #container {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 95%;
     height: auto;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
 }
 
+#container.show {
+  opacity: 1;
+}
 
 #game-board {
     display: grid;
@@ -45,7 +75,8 @@ body {
     max-height: 500px;
     z-index:1;
     padding:5px;
-    border-radius: 5px;
+    border: 3px solid #c2c2c2;
+    border-radius: 3px;
     background:transparent;
     position: relative; /* Added to contain the tiles */
     overflow: hidden; /* Added to hide overflowing content */
@@ -154,7 +185,7 @@ body {
 #total-score-box{
   height: min(16vw, 100px);
   width: min(16vw, 100px);
-  border: 3px solid white;
+  border: 3px solid #c2c2c2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -179,7 +210,7 @@ body {
 }
 
 .clickable-word {
-  width: 50px;
+  width: 75px;
   padding: 0px 10px;
   display: inline-grid;
 }
@@ -225,18 +256,12 @@ body {
 }
 
 
-@media (min-width: 700px) {
-  .tile {
-    font-size: 48px;
-  }
-}
-
 .empty {
     /* background-color: #bbb; */
 }
 
 .filled {
-    background-color: white;
+    background-color: #c2c2c2;
 }
 
 .single {
@@ -294,9 +319,8 @@ button {
   border-radius: 8px;
   transition-duration: 0.3s;
   outline: none;
-  white-space: nowrap; /* Prevent the text from wrapping */
-  overflow: hidden; /* Hide overflowing text */
-  text-overflow: ellipsis; /* Add ellipsis (...) when the text overflows */
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 button:hover {
