@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async event => {
 document.getElementById('reset-button').addEventListener('click', () => {
   Board.resetBoard();
   Board.updateBoard();
-  Board.updateScoreDisplay();
+  Layout.updateScoreDisplay();
 });
 
 document.getElementById('shuffle-button').addEventListener('click', () => {

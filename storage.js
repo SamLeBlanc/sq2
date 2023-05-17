@@ -1,5 +1,5 @@
 // import DataLoader from './data.js';
-// import Board from './board.js';
+import Layout from './layout.js';
 
 class Storage {
   constructor() {
@@ -36,6 +36,7 @@ class Storage {
     await DataLoader.loadData();
     Board.updateBoard()
     localStorage.setItem('customWordInclude', this.customWordInclude);
+    Layout.displayWords(false)
   }
 
   async addCustomWordExclude(word){
@@ -44,6 +45,15 @@ class Storage {
     await DataLoader.loadData();
     Board.updateBoard()
     localStorage.setItem('customWordExclude', this.customWordExclude);
+    Layout.displayWords(true)
+  }
+
+  resetCustomWordInclude(){
+    localStorage.setItem('customWordInclude', []);
+  }
+
+  resetCustomWordExclude(){
+    localStorage.setItem('customWordExclude', []); 
   }
 
   // Last Move Time

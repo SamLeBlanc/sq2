@@ -5,7 +5,7 @@ class Layout {
     this.buttonsContainer = document.getElementById('buttons-container');
     this.wordBox = document.getElementById('word-box');
     this.wordBoxState = 'showingTitle';
-
+    this.words;
   }
 
   // Score
@@ -68,80 +68,177 @@ class Layout {
   }
 
   updateWordBoxDisplay(){
-    let wordBox = document.getElementById('word-box');
-    let wordBoxInner = document.getElementById('word-box-inner');
-
-    let title = document.getElementById('title');
-    let titleImage = document.getElementById('title-image'); // assuming the title is an image
+    console.log('updateWordBOxState')
     let button = document.getElementById('words-button');
-
-    let oldHeight = wordBoxInner.getBoundingClientRect().height;
-
+    let titleBoard = document.getElementById("title-board");
     if (this.wordBoxState === 'showingTitle') {
-      let titleRect = title.getBoundingClientRect();
-      let width = titleRect.width;
-      let newWidth = width / 1.5;
-      let translateY = 50; // calculate the difference in height
-      title.style.transform = `translateY(${translateY}px)`;
-      title.style.width = newWidth + 'px';
+      titleBoard.classList.add("reduced");
+      this.displayWords(true);
       button.style.textDecoration = 'none';
       this.wordBoxState = 'showingWords';
-      this.displayWords(true);
-
-      let newHeight = wordBoxInner.getBoundingClientRect().height;
-      let translateY1 = (newHeight - oldHeight) / 2;
-      title.style.transform = `translateY(${translateY1}px)`;
-
     } else if (this.wordBoxState === 'showingWords') {
+      titleBoard.classList.add("reduced");
+      this.displayWords(false);
       button.style.textDecoration = 'line-through';
       this.wordBoxState = 'showingNonWords';
-      this.displayWords(false);
-
-      // let newHeight = wordBoxInner.getBoundingClientRect().height;
-      // let translateY2 = (newHeight - oldHeight) / 2;
-      // title.style.transform = `translateY(${translateY2}px)`;
-
     } else {
-      let width = title.getBoundingClientRect().width;
-      title.style.width = (width * 1.5) + 'px';
+      titleBoard.classList.remove("reduced");
       button.style.textDecoration = 'none';
       document.getElementById('word-box-inner').innerHTML = '';
       this.wordBoxState = 'showingTitle';
-      title.style.transform = `translateY(${0}px)`;
     }
-}
+  }
 
   displayWords(valid) {
-      const words = Board.getWords({valid: valid});
-      const wordBox = document.getElementById('word-box-inner');
-      const tempElement = document.createElement('span');
-      tempElement.style.visibility = 'hidden';
-      tempElement.style.whiteSpace = 'no-wrap'; // Ensure the text doesn't wrap when calculating width
-      document.body.appendChild(tempElement);
-      let lineWidth = 0;
+    console.log('display words')
+    const words = this.words
+      .filter(wordObj => {
+        let isValid = wordObj.valid === valid;
+        return isValid;
+      })
+      .map(wordObj => wordObj.word);  // Transform the array to only include the word itself
 
-      wordBox.innerHTML = '';
+    const wordBox = document.getElementById('word-box-inner');
+    let wordGroup = document.createElement('div');
 
+    wordBox.innerHTML = '';
+
+    console.log(words.length)
+
+    if (words.length == 0){
+      const nullWord = document.createElement('span');
+      nullWord.textContent = '[none]';
+      wordGroup.appendChild(nullWord);
+      wordBox.appendChild(wordGroup);
+    } else {
       words.forEach((word, index) => {
-          tempElement.innerHTML = word + '&nbsp;&nbsp;'; // Set the text of the temporary element
-          const wordWidth = tempElement.getBoundingClientRect().width; // Get the width of the word
+        // Wrap the word with <span> tag and add a class for event listener
+        const clickableWord = document.createElement('span');
+        clickableWord.className = "clickable-word";
+        clickableWord.textContent = word;
 
-          if (lineWidth + wordWidth > 250){
-              wordBox.innerHTML = wordBox.innerHTML + '<br>';
-              lineWidth = 0;
-          }
+        // Add word to the current group
+        wordGroup.appendChild(clickableWord);
 
-          // Add the word without '&nbsp;&nbsp;' if it's the last word in a line or the array
-          if (lineWidth + wordWidth * 2 > 250 || index === words.length - 1) {
-              wordBox.innerHTML = wordBox.innerHTML + word;
-          } else {
-              wordBox.innerHTML = wordBox.innerHTML + word + '&nbsp;&nbsp;';
-          }
-          lineWidth += wordWidth;
+        // If this word is the 4th in its group or the last in the array, append the group to the box
+        if ((index + 1) % 4 === 0 || index === words.length - 1) {
+          wordBox.appendChild(wordGroup);
+          wordGroup = document.createElement('div');  // Start a new group
+        }
       });
+    }
 
-      document.body.removeChild(tempElement); // Clean up temporary element
+    // Add event listener for clickable words
+    const clickableWords = document.querySelectorAll('.clickable-word');
+    clickableWords.forEach(wordElement => {
+      wordElement.addEventListener('click', (event) => this.wordClicked(event));
+    });
   }
+
+  async wordClicked(event) {
+    console.log(event)
+    const clickedWord = event.target.textContent.toLowerCase();
+
+    // Get the word definition, assuming you have a function getWordDefinition for this
+    const wordDefinitionText = await this.getWordDefinition(clickedWord);
+
+    // Create the modal
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+
+    // Create the modal content container
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+
+    const closeModal = () => {
+      if (modal) {
+        modal.remove();
+      }
+    }
+
+    // Create close button
+    const closeModalButton = document.createElement('span');
+    closeModalButton.className = 'close-modal';
+    closeModalButton.innerHTML = '&times;';
+    closeModalButton.addEventListener('click', () => closeModal());
+
+    // Add the close button to the modal content
+    modalContent.appendChild(closeModalButton);
+
+    // Add the word title
+    const wordTitle = document.createElement('h2');
+    wordTitle.textContent = clickedWord.toUpperCase();
+    modalContent.appendChild(wordTitle);
+
+    // Add the word definition
+    const wordDefinition = document.createElement('p');
+    wordDefinition.textContent = `${wordDefinitionText}`; // Replace '...' with the actual definition
+    modalContent.appendChild(wordDefinition);
+
+    // Create the challenge button
+    const challengeButton = document.createElement('button');
+    challengeButton.textContent = 'Challenge';
+    challengeButton.addEventListener('click', () => {
+      // Challenge word action here
+      console.log(`Challenged the word: ${clickedWord}`);
+      closeModal();
+    });
+
+    let wordBoxState;
+    if (document.getElementById('words-button').style.textDecoration == 'none'){
+      wordBoxState = 'showingWords'
+    } else {
+      wordBoxState = 'showingNonWords'
+    };
+
+    // Create the add/exclude from dictionary button
+    const dictionaryButton = document.createElement('button');
+    if (wordBoxState === 'showingNonWords') {
+      dictionaryButton.textContent = 'Add to dictionary';
+      dictionaryButton.addEventListener('click', () => {
+        Storage.addCustomWordInclude(clickedWord)
+        console.log(`Added the word: ${clickedWord} to the dictionary`);
+        closeModal();
+      });
+    } else {
+      dictionaryButton.textContent = 'Exclude from dictionary';
+      dictionaryButton.addEventListener('click', () => {
+        Storage.addCustomWordExclude(clickedWord)
+        console.log(`Excluded the word: ${clickedWord} from the dictionary`);
+        closeModal();
+      });
+    }
+
+    // Add buttons to the modal content
+    modalContent.appendChild(challengeButton);
+    modalContent.appendChild(dictionaryButton);
+
+    // Add modal content to the modal
+    modal.appendChild(modalContent);
+
+    // Add modal to the body
+    document.body.appendChild(modal);
+
+    // Display the modal
+    modal.style.display = 'block';
+  }
+
+  async getWordDefinition(word) {
+    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+
+    if (!response.ok) {
+      console.log(`HTTP error! status: ${response.status}`);
+      return 'No definition found';
+    } else {
+      const data = await response.json();
+      if (data[0] && data[0].meanings[0] && data[0].meanings[0].definitions[0]) {
+        return data[0].meanings[0].definitions[0].definition;
+      } else {
+        return 'No definition found';
+      }
+    }
+  }
+
 
   // Buttons
   resizeButtons() {
@@ -152,11 +249,10 @@ class Layout {
         button.style.margin = '4px 4px';
       });
     }
-    else {
-      // Set the styles for smaller screens here
+    if (window.innerWidth > 400) {
       buttons.forEach(button => {
-        button.style.padding = '...';
-        button.style.margin = '...';
+        button.style.padding = '5px 15px';
+        button.style.margin = '4px 8px';
       });
     }
   }

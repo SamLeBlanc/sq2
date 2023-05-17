@@ -142,6 +142,7 @@ class Board {
       addWord(word, ids, 'down');  // Check for word at the end of the column
     }
 
+    Layout.words = words
     return words;
   }
 
@@ -231,11 +232,15 @@ class Board {
 
     resetTileClasses(tiles);
     highlightValidWords(tiles, gameBoard);
-    // this.displayWords()
+
     Layout.updateScoreDisplay();  // Update the score display after highlighting valid words
-
+    if (Layout.wordBoxState == 'showingWords'){
+      Layout.displayWords(true)
+    }
+    if (Layout.wordBoxState == 'showingNonWords'){
+      Layout.displayWords(false)
+    }
     this.lastMoveTimestamp = Date.now()
-
     Storage.storeLastMoveTimestamp(this.lastMoveTimestamp)
 
   }
