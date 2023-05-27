@@ -450,7 +450,7 @@ class Board {
             width: `${tileWidth}px`,
             height: `${tileHeight}px`,
             position: 'fixed',
-            opacity: '0.5',
+            opacity: '1',
             transform: `translate(${touch.clientX - (1.2 * tileWidth)}px, ${touch.clientY - (1.2 * tileHeight)}px)`
           });
 

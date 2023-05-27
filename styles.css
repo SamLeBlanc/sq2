@@ -70,12 +70,12 @@ body {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(7, 1fr);
-    gap: min(1vw, 5px);
+    gap: 0px;
     max-width: 500px;
     max-height: 500px;
     z-index:1;
     padding:5px;
-    border: 3px solid #c2c2c2;
+    border: 3px solid #b1b1b1;
     border-radius: 3px;
     background:transparent;
     position: relative; /* Added to contain the tiles */
@@ -120,7 +120,7 @@ body {
 
 
 .tile {
-    /* border: 1px solid #000; */
+    border: 2px solid #000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -185,7 +185,7 @@ body {
 #total-score-box{
   height: min(16vw, 100px);
   width: min(16vw, 100px);
-  border: 3px solid #c2c2c2;
+  border: 3px solid #b1b1b1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -261,7 +261,7 @@ body {
 }
 
 .filled {
-    background-color: #c2c2c2;
+    background-color: #b1b1b1;
 }
 
 .half {
@@ -304,6 +304,16 @@ body {
   justify-content: center;
 }
 
+#loadingText{
+  border: 3px solid white;
+  font-size: min(7vw, 40px);
+  height: min(14vw, 90px);
+  width: min(14vw, 90px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
 #title-image{
   width: 100%;
