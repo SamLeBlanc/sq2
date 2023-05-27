@@ -264,6 +264,10 @@ body {
     background-color: #c2c2c2;
 }
 
+.half {
+  background-color: white;
+}
+
 .single {
   background-color: #47B6FF;
 }

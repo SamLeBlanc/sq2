@@ -13,37 +13,41 @@ class Layout {
 
   // Score
   calculateScore() {
-    let score = [0,0,0,0,0];
+    let score = [0,0,0,0,0,0];
     const tiles = Array.from(document.querySelectorAll('.tile'));
       tiles.forEach(tile => {
-      if (tile.classList.contains('single')) {
+      if (tile.classList.contains('half')) {
         score[0] += 1;
       }
-      if (tile.classList.contains('double')) {
+      if (tile.classList.contains('single')) {
         score[1] += 1;
       }
-      if (tile.classList.contains('triple')) {
+      if (tile.classList.contains('double')) {
         score[2] += 1;
       }
-      if (tile.classList.contains('quadruple')) {
+      if (tile.classList.contains('triple')) {
         score[3] += 1;
       }
-      if (tile.classList.contains('quintuple')) {
+      if (tile.classList.contains('quadruple')) {
         score[4] += 1;
       }
-      score[5] = score[0] + 2*score[1] + 3*score[2] + 4*score[3] + 5*score[4]
+      if (tile.classList.contains('quintuple')) {
+        score[5] += 1;
+      }
+      score[6] = score[1] + 2*score[2] + 3*score[3] + 4*score[4] + 5*score[5]
     });
     return score;
   }
 
   updateScoreDisplay() {
     const score = this.calculateScore();
-    document.getElementById('score-value-1').textContent =  score[0];
-    document.getElementById('score-value-2').textContent =  score[1];
-    document.getElementById('score-value-3').textContent =  score[2];
-    document.getElementById('score-value-4').textContent =  score[3];
-    document.getElementById('score-value-5').textContent =  score[4];
-    document.getElementById('total-score').textContent = score[5];
+    document.getElementById('score-value-0').textContent =  score[0];
+    document.getElementById('score-value-1').textContent =  score[1];
+    document.getElementById('score-value-2').textContent =  score[2];
+    document.getElementById('score-value-3').textContent =  score[3];
+    document.getElementById('score-value-4').textContent =  score[4];
+    // document.getElementById('score-value-5').textContent =  score[5];
+    document.getElementById('total-score').textContent = score[6];
   }
 
   // Word Box

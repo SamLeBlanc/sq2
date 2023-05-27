@@ -163,7 +163,7 @@ class Board {
 
     const resetTileClasses = tiles => {
       tiles.forEach(tile => {
-        tile.classList.remove('single', 'double','triple','quadruple', 'quintuple','correct');
+        tile.classList.remove('half','single', 'double','triple','quadruple', 'quintuple','correct');
         if (tile.textContent.trim() !== "") {
           tile.classList.add('filled');
         }
@@ -193,7 +193,8 @@ class Board {
       Object.entries(tileCounts).forEach(([id, count]) => {
         let tile = document.getElementById(id);
         // reset all classes to default
-        tile.classList.remove('filled', 'single', 'double', 'triple', 'quadruple','quintuple');
+        console.log('new')
+        tile.classList.remove('filled', 'half', 'single', 'double', 'triple', 'quadruple','quintuple');
 
         // get tile position
         const rect = tile.getBoundingClientRect();
@@ -208,17 +209,33 @@ class Board {
         const center = (row == 3 && col == 3);
 
         // assign classes based on count and whether it's an inner tile
-        if (count == 1 && outerRing) {
+        if (count == 1){
+          tile.classList.add('half');
+        } else if (count == 2 && outerRing) {
           tile.classList.add('single');
-        } else if ((count == 2 && outerRing) || (count == 1 && secondRing)) {
+        } else if ((count == 2 && secondRing)) {
           tile.classList.add('double');
-        } else if ((count == 2 && secondRing) || (count == 1 && thirdRing)) {
+        } else if ((count == 2 && thirdRing)) {
           tile.classList.add('triple');
-        } else if ((count == 2 && thirdRing) || (count == 1 && center)) {
+        } else if ((count == 2 && center)) {
           tile.classList.add('quadruple');
-        } else if (count == 2 && center) {
-          tile.classList.add('quintuple');
         }
+        // else if (count == 2 && center) {
+        //   tile.classList.add('quintuple');
+        // }
+
+        // assign classes based on count and whether it's an inner tile
+        // if (count == 1 && outerRing) {
+        //   tile.classList.add('single');
+        // } else if ((count == 2 && outerRing) || (count == 1 && secondRing)) {
+        //   tile.classList.add('double');
+        // } else if ((count == 2 && secondRing) || (count == 1 && thirdRing)) {
+        //   tile.classList.add('triple');
+        // } else if ((count == 2 && thirdRing) || (count == 1 && center)) {
+        //   tile.classList.add('quadruple');
+        // } else if (count == 2 && center) {
+        //   tile.classList.add('quintuple');
+        // }
       });
     }
 
@@ -434,7 +451,7 @@ class Board {
             height: `${tileHeight}px`,
             position: 'fixed',
             opacity: '0.5',
-            transform: `translate(${touch.clientX - (1.5 * tileWidth)}px, ${touch.clientY - (1.5 * tileHeight)}px)`
+            transform: `translate(${touch.clientX - (1.2 * tileWidth)}px, ${touch.clientY - (1.2 * tileHeight)}px)`
           });
 
           // Make the original tile invisible
@@ -466,7 +483,7 @@ class Board {
     const handleTouchMove = event => {
       event.preventDefault(); // prevent scrolling while moving
       if (this.shadowTile != null) {
-        this.shadowTile.style.transform = `translate(${event.touches[0].clientX - (1.5*this.shadowTile.offsetWidth)}px, ${event.touches[0].clientY - (1.5*this.shadowTile.offsetHeight)}px)`;
+        this.shadowTile.style.transform = `translate(${event.touches[0].clientX - (1.2*this.shadowTile.offsetWidth)}px, ${event.touches[0].clientY - (1.2*this.shadowTile.offsetHeight)}px)`;
       }
     }
 
