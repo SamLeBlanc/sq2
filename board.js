@@ -336,20 +336,37 @@ class Board {
     let color = getComputedStyle(tile).backgroundColor;
     let classes = ['double', 'triple', 'quadruple', 'quintuple'];
 
+    const shadowColorDictionary = {
+      'double': '#527fe0',
+      'triple': '#7f4ebc',
+      'quadruple': '#c841a6',
+      'quintuple': '#ff1f87',
+    };
+
+    // Get color based on the class of the tile
+    for (let className of classes) {
+      if (tile.classList.contains(className)) {
+        color = shadowColorDictionary[className];
+        break;
+      }
+    }
+
     let blackShadow = '';
     let coloredShadow = '';
 
+    let shadowWidth = '2px';
+
     // check each border separately
-    if (bottom || hasAnyClass(tile, classes)) coloredShadow += `inset 0 -2px 0 ${color}, `;
+    if (bottom || hasAnyClass(tile, classes)) coloredShadow += `inset 0 -${shadowWidth} 0 ${color}, `;
     else blackShadow += `inset 0 -2px 0 black, `;
 
-    if (top || hasAnyClass(tile, classes)) coloredShadow += `inset 0 2px 0 ${color}, `;
+    if (top || hasAnyClass(tile, classes)) coloredShadow += `inset 0 ${shadowWidth} 0 ${color}, `;
     else blackShadow += `inset 0 2px 0 black, `;
 
-    if (left || hasAnyClass(tile, classes)) coloredShadow += `inset 2px 0 0 ${color}, `;
+    if (left || hasAnyClass(tile, classes)) coloredShadow += `inset ${shadowWidth} 0 0 ${color}, `;
     else blackShadow += `inset 2px 0 0 black, `;
 
-    if (right || hasAnyClass(tile, classes)) coloredShadow += `inset -2px 0 0 ${color}, `;
+    if (right || hasAnyClass(tile, classes)) coloredShadow += `inset -${shadowWidth} 0 0 ${color}, `;
     else blackShadow += `inset -2px 0 0 black, `;
 
     // Remove the trailing comma and space from both shadows
@@ -377,23 +394,24 @@ class Board {
 
     classes = ['single','double', 'triple', 'quadruple', 'quintuple'];
     if (hasAnyClass(tile, classes)) {
-      let adjacentTiles = this.checkAdjacentTiles(tile.id);
-
-      let opts = [
-        ['Top','Left'],
-        ['Top','Right'],
-        ['Bottom','Left'],
-        ['Bottom','Right'],
-      ]
-      console.log(tile)
-      console.log(adjacentTiles)
-
-      opts.forEach(opt => {
-        let corner = `border-${opt[0].toLowerCase()}-${opt[1].toLowerCase()}-radius`
-        let round = (opt[0] in adjacentTiles && opt[1] in adjacentTiles) ? true : false;
-        tile.style[corner] = round ? '3px' : '0px';
-        console.log(corner, round)
-      })
+      // let adjacentTiles = this.checkAdjacentTiles(tile.id);
+      //
+      // let opts = [
+      //   ['Top','Left'],
+      //   ['Top','Right'],
+      //   ['Bottom','Left'],
+      //   ['Bottom','Right'],
+      // ]
+      // console.log(tile)
+      // console.log(adjacentTiles)
+      //
+      // opts.forEach(opt => {
+      //   let corner = `border-${opt[0].toLowerCase()}-${opt[1].toLowerCase()}-radius`
+      //   let round = (opt[0] in adjacentTiles && opt[1] in adjacentTiles) ? true : false;
+      //   tile.style[corner] = round ? '3px' : '0px';
+      //   console.log(corner, round)
+      // })
+      tile.style.borderRadius = '3px';
   }
 
 
