@@ -193,7 +193,6 @@ class Board {
       Object.entries(tileCounts).forEach(([id, count]) => {
         let tile = document.getElementById(id);
         // reset all classes to default
-        console.log('new')
         tile.classList.remove('filled', 'half', 'single', 'double', 'triple', 'quadruple','quintuple');
 
         // get tile position
@@ -220,22 +219,7 @@ class Board {
         } else if ((count == 2 && center)) {
           tile.classList.add('quadruple');
         }
-        // else if (count == 2 && center) {
-        //   tile.classList.add('quintuple');
-        // }
 
-        // assign classes based on count and whether it's an inner tile
-        // if (count == 1 && outerRing) {
-        //   tile.classList.add('single');
-        // } else if ((count == 2 && outerRing) || (count == 1 && secondRing)) {
-        //   tile.classList.add('double');
-        // } else if ((count == 2 && secondRing) || (count == 1 && thirdRing)) {
-        //   tile.classList.add('triple');
-        // } else if ((count == 2 && thirdRing) || (count == 1 && center)) {
-        //   tile.classList.add('quadruple');
-        // } else if (count == 2 && center) {
-        //   tile.classList.add('quintuple');
-        // }
       });
     }
 
@@ -247,6 +231,7 @@ class Board {
 
     resetTileClasses(tiles);
     highlightValidWords(tiles, gameBoard);
+    this.adjustTileShadows();
 
     Layout.updateScoreDisplay();  // Update the score display after highlighting valid words
     if (Layout.wordBoxState == 'showingWords'){
@@ -345,6 +330,155 @@ class Board {
       element.style.transition = `transform ${transitionSpeed}ms ease`;
       element.style.zIndex = '2';
     }
+  }
+
+  updateTileShadow(tile, top, right, bottom, left) {
+    let color = getComputedStyle(tile).backgroundColor;
+    let classes = ['double', 'triple', 'quadruple', 'quintuple'];
+
+    let blackShadow = '';
+    let coloredShadow = '';
+
+    // check each border separately
+    if (bottom || hasAnyClass(tile, classes)) coloredShadow += `inset 0 -2px 0 ${color}, `;
+    else blackShadow += `inset 0 -2px 0 black, `;
+
+    if (top || hasAnyClass(tile, classes)) coloredShadow += `inset 0 2px 0 ${color}, `;
+    else blackShadow += `inset 0 2px 0 black, `;
+
+    if (left || hasAnyClass(tile, classes)) coloredShadow += `inset 2px 0 0 ${color}, `;
+    else blackShadow += `inset 2px 0 0 black, `;
+
+    if (right || hasAnyClass(tile, classes)) coloredShadow += `inset -2px 0 0 ${color}, `;
+    else blackShadow += `inset -2px 0 0 black, `;
+
+    // Remove the trailing comma and space from both shadows
+    blackShadow = blackShadow.slice(0, -2);
+    coloredShadow = coloredShadow.slice(0, -2);
+
+    // combine both strings with colored shadows last
+    let boxShadow = '';
+    if (blackShadow && coloredShadow) {
+      boxShadow = `${blackShadow}, ${coloredShadow}`;
+    } else {
+      boxShadow = blackShadow || coloredShadow;
+    }
+
+    tile.style.boxShadow = boxShadow;
+
+    function hasAnyClass(element, classes) {
+      for (let className of classes) {
+        if (element.classList.contains(className)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    classes = ['single','double', 'triple', 'quadruple', 'quintuple'];
+    if (hasAnyClass(tile, classes)) {
+      let adjacentTiles = this.checkAdjacentTiles(tile.id);
+
+      let opts = [
+        ['Top','Left'],
+        ['Top','Right'],
+        ['Bottom','Left'],
+        ['Bottom','Right'],
+      ]
+      console.log(tile)
+      console.log(adjacentTiles)
+
+      opts.forEach(opt => {
+        let corner = `border-${opt[0].toLowerCase()}-${opt[1].toLowerCase()}-radius`
+        let round = (opt[0] in adjacentTiles && opt[1] in adjacentTiles) ? true : false;
+        tile.style[corner] = round ? '3px' : '0px';
+        console.log(corner, round)
+      })
+  }
+
+
+  }
+
+  adjustTileShadows() {
+    const tiles = Array.from(document.querySelectorAll('.tile'));
+    const words = this.findWords();
+
+    tiles.forEach(tile => {
+      tile.style.borderRadius = '0px'
+    })
+
+    let shadowStates = tiles.map(() => ({
+      top: false,
+      right: false,
+      bottom: false,
+      left: false,
+      horizontal: false,
+      vertical: false,
+    }));
+
+    words.forEach(word => {
+      if (word.valid) {
+
+
+        for (let i = 0; i < word.ids.length; i++) {
+
+          let currentTile = document.getElementById(word.ids[i]);
+          let nextTile = i + 1 < word.ids.length ? document.getElementById(word.ids[i + 1]) : null;
+          let prevTile = i - 1 >= 0 ? document.getElementById(word.ids[i - 1]) : null;
+
+          let currentTileIndex = tiles.indexOf(currentTile);
+          if (word.orientation == 'across') {
+            shadowStates[currentTileIndex].horizontal = true;
+          }
+          if (word.orientation == 'down') {
+            shadowStates[currentTileIndex].vertical = true;
+          }
+          let nextTileIndex = nextTile ? tiles.indexOf(nextTile) : -1;
+          let prevTileIndex = prevTile ? tiles.indexOf(prevTile) : -1;
+
+          let currentTilePosition = {
+            row: Math.floor(currentTileIndex / 7),
+            col: currentTileIndex % 7
+          };
+          let nextTilePosition = nextTile ? {
+            row: Math.floor(nextTileIndex / 7),
+            col: nextTileIndex % 7
+          } : null;
+          let prevTilePosition = prevTile ? {
+            row: Math.floor(prevTileIndex / 7),
+            col: prevTileIndex % 7
+          } : null;
+
+          if (nextTilePosition) {
+            if (currentTilePosition.row > nextTilePosition.row) {
+              shadowStates[currentTileIndex].top = true;
+            } else if (currentTilePosition.row < nextTilePosition.row) {
+              shadowStates[currentTileIndex].bottom = true;
+            } else if (currentTilePosition.col > nextTilePosition.col) {
+              shadowStates[currentTileIndex].left = true;
+            } else if (currentTilePosition.col < nextTilePosition.col) {
+              shadowStates[currentTileIndex].right = true;
+            }
+          }
+
+          if (prevTilePosition) {
+            if (currentTilePosition.row > prevTilePosition.row) {
+              shadowStates[currentTileIndex].top = true;
+            } else if (currentTilePosition.row < prevTilePosition.row) {
+              shadowStates[currentTileIndex].bottom = true;
+            } else if (currentTilePosition.col > prevTilePosition.col) {
+              shadowStates[currentTileIndex].left = true;
+            } else if (currentTilePosition.col < prevTilePosition.col) {
+              shadowStates[currentTileIndex].right = true;
+            }
+          }
+        }
+      }
+    });
+
+    tiles.forEach((tile, index) => {
+      this.updateTileShadow(tile, shadowStates[index].top, shadowStates[index].right, shadowStates[index].bottom, shadowStates[index].left);
+    });
   }
 
   resetElementStyle(element) {
@@ -537,32 +671,6 @@ class Board {
       event.preventDefault();
     };
 
-    // const undoLastMove = () => {
-    //   if (this.moveHistory.length > 0) {
-    //     const { sourceElement, targetElement } = this.moveHistory.pop();
-    //
-    //     // Swap the elements back to their original positions
-    //     swapElements(sourceElement, targetElement);
-    //
-    //     // Animate the swap
-    //     const sourceRect = sourceElement.getBoundingClientRect();
-    //     const targetRect = targetElement.getBoundingClientRect();
-    //     animateElementStyle(sourceElement, `translate(${targetRect.left - sourceRect.left}px, ${targetRect.top - sourceRect.top}px)`, this.transitionSpeed);
-    //     animateElementStyle(targetElement, `translate(${sourceRect.left - targetRect.left}px, ${sourceRect.top - targetRect.top}px)`, this.transitionSpeed);
-    //
-    //     // After transition ends, remove the transform style
-    //     sourceElement.addEventListener('transitionend', function handler() {
-    //       resetElementStyle(sourceElement);
-    //       resetElementStyle(targetElement);
-    //       sourceElement.removeEventListener('transitionend', handler);
-    //     });
-    //
-    //     setTimeout(() => {
-    //       this.updateBoard()
-    //     }, this.transitionSpeed + 100);
-    //   }
-    // }
-
 
     tiles.forEach(tile => {
 
@@ -577,6 +685,38 @@ class Board {
     });
 
   }
+
+  checkAdjacentTiles(tileId) {
+    const tiles = Array.from(document.querySelectorAll('.tile'));
+    const gridSize = 7;  // Grid is 7x7
+
+    const tileIndex = tiles.findIndex(tile => tile.id === tileId);  // Get the current index of the tile in the DOM
+
+    const positions = {
+      'Left': tileIndex - 1,
+      'Right': tileIndex + 1,
+      'Top': tileIndex - gridSize,
+      'Bottom': tileIndex + gridSize,
+      'Top-Left': tileIndex - gridSize - 1,
+      'Top-Right': tileIndex - gridSize + 1,
+      'Bottom-Left': tileIndex + gridSize - 1,
+      'Bottom-Right': tileIndex + gridSize + 1
+    };
+
+    const adjacentTiles = {};
+
+    for (const [direction, index] of Object.entries(positions)) {
+      if (index >= 0 && index < tiles.length) {
+        const tileAtPosition = tiles[index];
+        if (tileAtPosition.textContent.trim() !== '') {
+          adjacentTiles[direction] = tileAtPosition;
+        }
+      }
+    }
+
+    return adjacentTiles;
+  }
+
 
 }
 

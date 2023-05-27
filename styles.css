@@ -70,7 +70,9 @@ body {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(7, 1fr);
+    gap: min(1vw, 5px);
     gap: 0px;
+
     max-width: 500px;
     max-height: 500px;
     z-index:1;
@@ -120,7 +122,11 @@ body {
 
 
 .tile {
-    border: 2px solid #000;
+    box-shadow:
+      inset 0 -2px 0 black,
+      inset 0 2px 0 0 black,
+      inset 2px 0 0 0 black,
+      inset -2px 0 0 0 black;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -131,7 +137,7 @@ body {
     transition: transform 0s ease;
     position: relative;
     z-index: 1;
-    border-radius: 2px;
+    /* border-radius: 3px; */
     color: black;
 }
 
@@ -262,26 +268,44 @@ body {
 
 .filled {
     background-color: #b1b1b1;
+    /* -webkit-box-shadow:inset 0px 0px 0px 2px #999999;
+    -moz-box-shadow:inset 0px 0px 0px 2px #999999;
+    box-shadow:inset 0px 0px 0px 2px #999999; */
 }
 
 .half {
-  background-color: white;
+  background-color: #F5F5F5;
+  /* -webkit-box-shadow:inset 0px 0px 0px 2px #CCCCCC;
+  -moz-box-shadow:inset 0px 0px 0px 2px #CCCCCC;
+  box-shadow:inset 0px 0px 0px 2px #CCCCCC; */
 }
 
 .single {
   background-color: #47B6FF;
+  /* -webkit-box-shadow:inset 0px 0px 0px 2px #1FA5FF;
+  -moz-box-shadow:inset 0px 0px 0px 2px #1FA5FF;
+  box-shadow:inset 0px 0px 0px 2px #1FA5FF; */
 }
 
 .double {
   background-color: #527fe0;
+  /* -webkit-box-shadow:inset 0px 0px 0px 2px #3B6dd9;
+  -moz-box-shadow:inset 0px 0px 0px 2px #3B6dd9;
+  box-shadow:inset 0px 0px 0px 2px #3B6dd9; */
 }
 
 .triple {
   background-color: #7f4ebc;
+  /* -webkit-box-shadow:inset 0px 0px 0px 2px #6B3EA3;
+  -moz-box-shadow:inset 0px 0px 0px 2px #6B3EA3;
+  box-shadow:inset 0px 0px 0px 2px #6B3EA3; */
 }
 
 .quadruple {
   background-color: #c841a6;
+  /* -webkit-box-shadow:inset 0px 0px 0px 2px #B22e91;
+  -moz-box-shadow:inset 0px 0px 0px 2px #B22e91;
+  box-shadow:inset 0px 0px 0px 2px #B22e91; */
 }
 
 .quintuple {
